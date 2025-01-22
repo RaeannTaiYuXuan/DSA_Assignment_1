@@ -1,20 +1,153 @@
-// DSA_ASsignment_1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <string>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+// Function Prototypes (You will need to implement these functions)
+void addActor();
+void addMovie();
+void addActorToMovie();
+void updateActorDetails();
+void updateMovieDetails();
+void displayActorsByAgeRange();
+void displayRecentMovies();
+void displayMoviesByActor();
+void displayActorsByMovie();
+void displayActorsKnownByActor();
+
+void adminMenu();
+void userMenu();
+
+int main() {
+    int choice;
+
+    std::cout << "====================================\n";
+    std::cout << "       Movie Application Menu       \n";
+    std::cout << "====================================\n";
+    std::cout << "1. Administrator Menu\n";
+    std::cout << "2. User Menu\n";
+    std::cout << "3. Exit\n";
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
+
+    switch (choice) {
+    case 1:
+        adminMenu();
+        break;
+    case 2:
+        userMenu();
+        break;
+    case 3:
+        std::cout << "Exiting the program. Goodbye!\n";
+        break;
+    default:
+        std::cout << "Invalid choice. Please restart the program and try again.\n";
+    }
+
+    return 0;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+void adminMenu() {
+    int adminChoice;
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+    std::cout << "\n========== Administrator Menu ==========" << std::endl;
+    std::cout << "1. Add New Actor" << std::endl;
+    std::cout << "2. Add New Movie" << std::endl;
+    std::cout << "3. Add Actor to a Movie" << std::endl;
+    std::cout << "4. Update Actor Details" << std::endl;
+    std::cout << "5. Update Movie Details" << std::endl;
+    std::cout << "Enter your choice: ";
+    std::cin >> adminChoice;
+
+    switch (adminChoice) {
+    case 1:
+        addActor();
+        break;
+    case 2:
+        addMovie();
+        break;
+    case 3:
+        addActorToMovie();
+        break;
+    case 4:
+        updateActorDetails();
+        break;
+    case 5:
+        updateMovieDetails();
+        break;
+    default:
+        std::cout << "Invalid choice. Returning to main menu.\n";
+    }
+}
+
+void userMenu() {
+    int userChoice;
+
+    std::cout << "\n============= User Menu =============" << std::endl;
+    std::cout << "1. Display Actors by Age Range" << std::endl;
+    std::cout << "2. Display Movies from the Last 3 Years" << std::endl;
+    std::cout << "3. Display Movies by an Actor" << std::endl;
+    std::cout << "4. Display Actors in a Movie" << std::endl;
+    std::cout << "5. Display Actors Known by an Actor" << std::endl;
+    std::cout << "Enter your choice: ";
+    std::cin >> userChoice;
+
+    switch (userChoice) {
+    case 1:
+        displayActorsByAgeRange();
+        break;
+    case 2:
+        displayRecentMovies();
+        break;
+    case 3:
+        displayMoviesByActor();
+        break;
+    case 4:
+        displayActorsByMovie();
+        break;
+    case 5:
+        displayActorsKnownByActor();
+        break;
+    default:
+        std::cout << "Invalid choice. Returning to main menu.\n";
+    }
+}
+
+// Placeholder functions (implement these based on your data structures)
+void addActor() {
+    std::cout << "Adding a new actor... (To be implemented)\n";
+}
+
+void addMovie() {
+    std::cout << "Adding a new movie... (To be implemented)\n";
+}
+
+void addActorToMovie() {
+    std::cout << "Adding an actor to a movie... (To be implemented)\n";
+}
+
+void updateActorDetails() {
+    std::cout << "Updating actor details... (To be implemented)\n";
+}
+
+void updateMovieDetails() {
+    std::cout << "Updating movie details... (To be implemented)\n";
+}
+
+void displayActorsByAgeRange() {
+    std::cout << "Displaying actors by age range... (To be implemented)\n";
+}
+
+void displayRecentMovies() {
+    std::cout << "Displaying movies from the last 3 years... (To be implemented)\n";
+}
+
+void displayMoviesByActor() {
+    std::cout << "Displaying movies by an actor... (To be implemented)\n";
+}
+
+void displayActorsByMovie() {
+    std::cout << "Displaying actors in a movie... (To be implemented)\n";
+}
+
+void displayActorsKnownByActor() {
+    std::cout << "Displaying actors known by an actor... (To be implemented)\n";
+}
