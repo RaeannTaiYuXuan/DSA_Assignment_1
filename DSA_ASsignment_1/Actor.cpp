@@ -14,37 +14,35 @@ Actor* loadCSV(const string& filename, int& actorCount) {
         return nullptr;
     }
 
-    // Count the number of lines in the file (excluding the header)
     string line;
-    getline(file, line); // Skip the header line
+    getline(file, line); // skip header of csv
     while (getline(file, line)) {
         actorCount++;
     }
 
-    // Allocate memory for the array of actors
     Actor* actors = new Actor[actorCount];
 
-    // Reset file to the beginning
+    // reset file to beginning
     file.clear();
     file.seekg(0);
 
-    // Skip the header line again
+    // skip the header of csv
     getline(file, line);
 
-    // Read the file line by line and populate the array
+    // read line by line and add to array
     int index = 0;
     while (getline(file, line) && index < actorCount) {
         istringstream ss(line);
         string temp;
 
-        // Parse the ID
+        // parse the ID
         getline(ss, temp, ',');
         actors[index].id = stoi(temp);
 
-        // Parse the Name
+        // parse the Name
         getline(ss, actors[index].name, ',');
 
-        // Parse the Birth Year
+        // parse the Birth Year
         getline(ss, temp, ',');
         actors[index].birth = stoi(temp);
 
@@ -62,4 +60,34 @@ void displayActors(const Actor* actors, int actorCount) {
             << ", Name: " << actors[i].name
             << ", Birth Year: " << actors[i].birth << endl;
     }
+}
+
+void addActor(const string& filename) {
+    ofstream file(filename, ios::app); // open csv file in append mode
+
+    if (!file.is_open()) {
+        cerr << "Failed to open the file: " << filename << endl;
+        return;
+    }
+
+    int id;
+    string name;
+    int birth;
+
+    cout << "\n============= Add Actor =============" << endl;
+    // user input : actor details
+    cout << "Enter Actor ID: ";
+    cin >> id;
+    cin.ignore(); 
+    cout << "Enter Actor Name: ";
+    getline(cin, name);
+    cout << "Enter Actor Birth Year: ";
+    cin >> birth;
+
+    // write the new actor details to the CSV file
+    file << id << "," << name << "," << birth << endl;
+
+    cout << "Actor added successfully!" << endl;
+
+    file.close();
 }

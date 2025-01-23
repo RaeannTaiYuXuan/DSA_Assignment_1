@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include "Actor.h"
-
 using namespace std;
 
 // Function Prototypes (You will need to implement these functions)
@@ -15,23 +14,26 @@ void displayRecentMovies();
 void displayMoviesByActor();
 void displayActorsByMovie();
 void displayActorsKnownByActor();
-
-void adminMenu();
+void adminMenu(const string& filename);
 void userMenu();
 
+
+// main program
 int main() {
-    const string filename = "actors.csv";
+    const string actorfilename = "actors.csv";
     int actorCount = 0;
 
-    // Load actors from the CSV file
-    Actor* actors = loadCSV(filename, actorCount);
+    // load actors from the CSV file
+    Actor* actors = loadCSV(actorfilename, actorCount);
 
     if (!actors || actorCount == 0) {
         cout << "No data loaded from the file!" << endl;
         return 1;
     }
 
+    // temporary here for testing and checking
     displayActors(actors, actorCount);
+    cout << endl; 
 
     delete[] actors;
 
@@ -48,7 +50,7 @@ int main() {
 
     switch (choice) {
     case 1:
-        adminMenu();
+        adminMenu(actorfilename);
         break;
     case 2:
         userMenu();
@@ -63,9 +65,9 @@ int main() {
     return 0;
 }
 
-void adminMenu() {
+// adminMenu
+void adminMenu(const string& actorfilename) {
     int adminChoice;
-
     cout << "\n========== Administrator Menu ==========" << endl;
     cout << "1. Add New Actor" << endl;
     cout << "2. Add New Movie" << endl;
@@ -74,10 +76,9 @@ void adminMenu() {
     cout << "5. Update Movie Details" << endl;
     cout << "Enter your choice: ";
     cin >> adminChoice;
-
     switch (adminChoice) {
     case 1:
-        addActor();
+        addActor(actorfilename);
         break;
     case 2:
         addMovie();
@@ -96,6 +97,7 @@ void adminMenu() {
     }
 }
 
+// userMenu
 void userMenu() {
     int userChoice;
 
@@ -129,11 +131,12 @@ void userMenu() {
     }
 }
 
-// Placeholder functions (implement these based on your data structures)
-void addActor() {
-    cout << "Adding a new actor... (To be implemented)\n";
-}
 
+// dont use these, temporary here else code cant run....
+void addActor()
+{
+
+}
 void addMovie() {
     cout << "Adding a new movie... (To be implemented)\n";
 }
