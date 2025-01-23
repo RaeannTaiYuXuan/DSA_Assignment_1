@@ -3,8 +3,8 @@
 #include "Actor.h"
 using namespace std;
 
-// Function Prototypes (You will need to implement these functions)
-void addActor();
+// Function Prototypes 
+void addActor(Actor*& actors, int& actorCount);
 void addMovie();
 void addActorToMovie();
 void updateActorDetails();
@@ -14,11 +14,11 @@ void displayRecentMovies();
 void displayMoviesByActor();
 void displayActorsByMovie();
 void displayActorsKnownByActor();
-void adminMenu(const string& filename);
+void adminMenu(Actor*& actors, int& actorCount);
 void userMenu();
 
 
-// main program
+// main program --------------------------------------------------------------------------------
 int main() {
     const string actorfilename = "actors.csv";
     int actorCount = 0;
@@ -33,9 +33,7 @@ int main() {
 
     // temporary here for testing and checking
     displayActors(actors, actorCount);
-    cout << endl; 
-
-    delete[] actors;
+    cout << endl;
 
     int choice;
 
@@ -50,7 +48,7 @@ int main() {
 
     switch (choice) {
     case 1:
-        adminMenu(actorfilename);
+        adminMenu(actors, actorCount);
         break;
     case 2:
         userMenu();
@@ -62,11 +60,13 @@ int main() {
         cout << "Invalid choice. Please restart the program and try again.\n";
     }
 
+    delete[] actors;
+
     return 0;
 }
 
-// adminMenu
-void adminMenu(const string& actorfilename) {
+// adminMenu --------------------------------------------------------------------------------
+void adminMenu(Actor*& actors, int& actorCount) {
     int adminChoice;
     cout << "\n========== Administrator Menu ==========" << endl;
     cout << "1. Add New Actor" << endl;
@@ -78,7 +78,7 @@ void adminMenu(const string& actorfilename) {
     cin >> adminChoice;
     switch (adminChoice) {
     case 1:
-        addActor(actorfilename);
+        addActor(actors, actorCount);
         break;
     case 2:
         addMovie();
@@ -97,7 +97,7 @@ void adminMenu(const string& actorfilename) {
     }
 }
 
-// userMenu
+// userMenu --------------------------------------------------------------------------------
 void userMenu() {
     int userChoice;
 

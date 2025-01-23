@@ -2,9 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
 using namespace std;
 
+// loadcsv --------------------------------------------------------------------------------
 Actor* loadCSV(const string& filename, int& actorCount) {
     ifstream file(filename);
     actorCount = 0;
@@ -53,6 +53,7 @@ Actor* loadCSV(const string& filename, int& actorCount) {
     return actors;
 }
 
+// display actors --------------------------------------------------------------------------------
 void displayActors(const Actor* actors, int actorCount) {
     cout << "Actors loaded from the file:\n";
     for (int i = 0; i < actorCount; i++) {
@@ -62,32 +63,40 @@ void displayActors(const Actor* actors, int actorCount) {
     }
 }
 
-void addActor(const string& filename) {
-    ofstream file(filename, ios::app); // open csv file in append mode
-
-    if (!file.is_open()) {
-        cerr << "Failed to open the file: " << filename << endl;
-        return;
-    }
-
-    int id;
-    string name;
-    int birth;
-
+// add actor --------------------------------------------------------------------------------
+void addActor(Actor*& actors, int& actorCount) {
     cout << "\n============= Add Actor =============" << endl;
-    // user input : actor details
+
+    int id, birth;
+    string name;
+
+    // user input: actor details
     cout << "Enter Actor ID: ";
     cin >> id;
-    cin.ignore(); 
+    cin.ignore();
     cout << "Enter Actor Name: ";
     getline(cin, name);
     cout << "Enter Actor Birth Year: ";
     cin >> birth;
 
-    // write the new actor details to the CSV file
-    file << id << "," << name << "," << birth << endl;
+    // create new array
+    Actor* newActors = new Actor[actorCount + 1];
 
-    cout << "Actor added successfully!" << endl;
+    // copy existing actors into new array
+    for (int i = 0; i < actorCount; i++) {
+        newActors[i] = actors[i];
+    }
 
-    file.close();
+    // add new actor
+    newActors[actorCount].id = id;
+    newActors[actorCount].name = name;
+    newActors[actorCount].birth = birth;
+
+    actorCount++;
+
+    // free old array, point to new array
+    delete[] actors;
+    actors = newActors;
+
+    cout << "Actor added successfully to memory!" << endl;
 }
