@@ -4,99 +4,148 @@
 #include <iostream>
 using namespace std;
 
-// loadcsv --------------------------------------------------------------------------------
-Actor* loadCSV(const string& filename, int& actorCount) {
-    ifstream file(filename);
-    actorCount = 0;
+Actor* actorRoot = nullptr;
+Actor::Actor(int actorId, string actorName, int birthYear)
+    : id(actorId), name(actorName), yearOfBirth(birthYear), left(nullptr), right(nullptr) {}
 
+// load actors from csv ====================================================
+void loadActorsFromCSV(const string& filename) {
+    ifstream file(filename);
     if (!file.is_open()) {
-        cerr << "Failed to open the file: " << filename << endl;
-        return nullptr;
+        cerr << "Error: Could not open file " << filename << endl;
+        return;
     }
 
     string line;
-    getline(file, line); // skip header of csv
-    while (getline(file, line)) {
-        actorCount++;
+
+    // Skip the header line
+    if (!getline(file, line)) {
+        cerr << "Error: CSV file is empty or missing header." << endl;
+        return;
     }
 
-    Actor* actors = new Actor[actorCount];
-
-    // reset file to beginning
-    file.clear();
-    file.seekg(0);
-
-    // skip the header of csv
-    getline(file, line);
-
-    // read line by line and add to array
-    int index = 0;
-    while (getline(file, line) && index < actorCount) {
-        istringstream ss(line);
-        string temp;
-
-        // parse the ID
-        getline(ss, temp, ',');
-        actors[index].id = stoi(temp);
-
-        // parse the Name
-        getline(ss, actors[index].name, ',');
-
-        // parse the Birth Year
-        getline(ss, temp, ',');
-        actors[index].birth = stoi(temp);
-
-        index++;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string idStr, name, birthYearStr;
+        if (getline(ss, idStr, ',') && getline(ss, name, ',') && getline(ss, birthYearStr)) {
+            try {
+                int id = stoi(idStr);
+                int birthYear = stoi(birthYearStr);
+                actorRoot = addActor(actorRoot, id, name, birthYear);
+            }
+            catch (const exception& e) {
+                cerr << "Error processing line: " << line << " - " << e.what() << endl;
+            }
+        }
     }
 
     file.close();
-    return actors;
 }
 
-// display actors --------------------------------------------------------------------------------
-void displayActors(const Actor* actors, int actorCount) {
-    cout << "Actors loaded from the file:\n";
-    for (int i = 0; i < actorCount; i++) {
-        cout << "ID: " << actors[i].id
-            << ", Name: " << actors[i].name
-            << ", Birth Year: " << actors[i].birth << endl;
+
+// search ID ALGORITHM ====================================================
+bool searchDuplicateID(Actor* root, int id) {
+    while (root != nullptr) {
+        if (id == root->id) {
+            return true; 
+        }
+        if (id < root->id) {
+            root = root->left; 
+        }
+        else {
+            root = root->right; 
+        }
     }
+    return false; 
 }
 
-// add actor --------------------------------------------------------------------------------
-void addActor(Actor*& actors, int& actorCount) {
-    cout << "\n============= Add Actor =============" << endl;
+// add actor function =======================================================
+Actor* addActor(Actor* root, int id, const string& name, int yearOfBirth) {
+    if (root == nullptr) {
+        return new Actor(id, name, yearOfBirth);
+    }
 
-    int id, birth;
+    if (id == root->id) {
+        cout << "Error: Duplicate ID detected during insertion. Actor not added to the tree." << endl;
+        return root;
+    }
+
+    if (id < root->id) {
+        root->left = addActor(root->left, id, name, yearOfBirth);
+    }
+    else {
+        root->right = addActor(root->right, id, name, yearOfBirth);
+    }
+
+    return root;
+}
+void addActorWrapper() {
+    int id;
     string name;
+    int yearOfBirth;
 
-    // user input: actor details
-    cout << "Enter Actor ID: ";
-    cin >> id;
-    cin.ignore();
-    cout << "Enter Actor Name: ";
-    getline(cin, name);
-    cout << "Enter Actor Birth Year: ";
-    cin >> birth;
+    while (true) {
+        cout << "Enter actor ID: ";
+        cin >> id;
 
-    // create new array
-    Actor* newActors = new Actor[actorCount + 1];
+        if (id == 0) {
+            cout << "Exiting add actor process...\n" << endl;
+            return;
+        }
 
-    // copy existing actors into new array
-    for (int i = 0; i < actorCount; i++) {
-        newActors[i] = actors[i];
+        if (searchDuplicateID(actorRoot, id)) {
+            cout << "Error: Actor with this ID already exists. Please try again." << endl;
+        }
+        else {
+            break; 
+        }
     }
 
-    // add new actor
-    newActors[actorCount].id = id;
-    newActors[actorCount].name = name;
-    newActors[actorCount].birth = birth;
+    cin.ignore(); 
 
-    actorCount++;
+    while (true) {
+        cout << "Enter actor name: ";
+        getline(cin, name);
 
-    // free old array, point to new array
-    delete[] actors;
-    actors = newActors;
+        if (name == "0") {
+            cout << "Exiting add actor process...\n" << endl;
+            return;
+        }
 
-    cout << "Actor added successfully to memory!" << endl;
+        if (!name.empty()) {
+            break; 
+        }
+
+        cout << "Error: Name cannot be empty. Please try again." << endl;
+    }
+
+    while (true) {
+        cout << "Enter year of birth: ";
+        cin >> yearOfBirth;
+
+        if (yearOfBirth == 0) {
+            cout << "Exiting add actor process...\n" << endl;
+            return;
+        }
+
+        if (yearOfBirth > 1900 && yearOfBirth <= 2025) {
+            break; 
+        }
+
+        cout << "Error: Please enter a valid year of birth (between 1900 and 2025)." << endl;
+    }
+
+    actorRoot = addActor(actorRoot, id, name, yearOfBirth);
+    cout << "Actor added successfully!" << endl;
+}
+
+
+
+// display actors ====================================================
+void displayActors(Actor* root) {
+    if (root != nullptr) {
+        displayActors(root->left);
+        cout << "ID: " << root->id << ", Name: " << root->name << ", Year of Birth: " << root->yearOfBirth << endl;
+        displayActors(root->right);
+    }
 }
