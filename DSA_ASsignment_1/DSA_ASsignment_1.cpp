@@ -1,153 +1,126 @@
 #include <iostream>
-#include <string>
+#include "Actor.h"
+using namespace std;
 
-// Function Prototypes (You will need to implement these functions)
-void addActor();
-void addMovie();
-void addActorToMovie();
-void updateActorDetails();
-void updateMovieDetails();
-void displayActorsByAgeRange();
-void displayRecentMovies();
-void displayMoviesByActor();
-void displayActorsByMovie();
-void displayActorsKnownByActor();
+bool isRunning = true; 
 
-void adminMenu();
-void userMenu();
+
+// display main menu ==============================================================
+void displayMainMenu() {
+    cout << "========= Movie Application Menu =========" << endl;
+    cout << "1 : Administrator menu" << endl;
+    cout << "2 : User menu" << endl;
+    cout << "0 : Exit" << endl;
+    cout << "Enter your choice: ";
+}
+
+// display admin menu ==============================================================
+void displayAdminMenu() {
+    int adminChoice;
+    do {
+        cout << "\n========= Administrator Menu =========" << endl;
+        cout << "1 : Add new actor" << endl;
+        cout << "2 : Add new movie" << endl;
+        cout << "3 : Add an actor to a movie" << endl;
+        cout << "4 : Update actor details" << endl;
+        cout << "5 : Update movie details" << endl;
+        cout << "0 : Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> adminChoice;
+
+        switch (adminChoice) {
+        case 1:
+            cout << "\n========= Add new actor ========= " << endl;
+            cout << "To exit, enter 0 at any point" << endl;
+            addActorWrapper();
+            displayActors(actorRoot);
+            break;
+        case 2:
+            cout << "Option to add a new movie selected." << endl;
+            break;
+        case 3:
+            cout << "Option to add an actor to a movie selected." << endl;
+            break;
+        case 4:
+            cout << "Option to update actor details selected." << endl;
+            break;
+        case 5:
+            cout << "Option to update movie details selected." << endl;
+            break;
+        case 0:
+            cout << "Exiting application. Goodbye!" << endl;
+            isRunning = false;
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (isRunning);
+}
+
+// display user menu ==============================================================
+void displayUserMenu() {
+    int userChoice;
+    do {
+        cout << "\n========= User Menu =========" << endl;
+        cout << "1 : Display actors between a certain age" << endl;
+        cout << "2 : Display movies made within the past 3 years" << endl;
+        cout << "3 : Display all movies an actor starred in" << endl;
+        cout << "4 : Display all the actors in a particular movie" << endl;
+        cout << "5 : Display a list of all actors that a particular actor knows" << endl;
+        cout << "0 : Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> userChoice;
+
+        switch (userChoice) {
+        case 1:
+            cout << "Option to display actors between a certain age selected." << endl;
+            break;
+        case 2:
+            cout << "Option to display movies made within the past 3 years selected." << endl;
+            break;
+        case 3:
+            cout << "Option to display all movies an actor starred in selected." << endl;
+            break;
+        case 4:
+            cout << "Option to display all the actors in a particular movie selected." << endl;
+            break;
+        case 5:
+            cout << "Option to display a list of all actors that a particular actor knows selected." << endl;
+            break;
+        case 0:
+            cout << "Exiting application. Goodbye!" << endl;
+            isRunning = false;
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (isRunning);
+}
 
 int main() {
     int choice;
+    const string actorCSV = "actors.csv";
+    loadActorsFromCSV(actorCSV);
 
-    std::cout << "====================================\n";
-    std::cout << "       Movie Application Menu       \n";
-    std::cout << "====================================\n";
-    std::cout << "1. Administrator Menu\n";
-    std::cout << "2. User Menu\n";
-    std::cout << "3. Exit\n";
-    std::cout << "Enter your choice: ";
-    std::cin >> choice;
+    while (isRunning) {
+        displayMainMenu();
+        cin >> choice;
 
-    switch (choice) {
-    case 1:
-        adminMenu();
-        break;
-    case 2:
-        userMenu();
-        break;
-    case 3:
-        std::cout << "Exiting the program. Goodbye!\n";
-        break;
-    default:
-        std::cout << "Invalid choice. Please restart the program and try again.\n";
-    }
+        switch (choice) {
+        case 1:
+            displayAdminMenu();
+            break;
+        case 2:
+            displayUserMenu();
+            break;
+        case 0:
+            cout << "Exiting application. Goodbye!" << endl;
+            isRunning = false;
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    } 
 
     return 0;
-}
-
-void adminMenu() {
-    int adminChoice;
-
-    std::cout << "\n========== Administrator Menu ==========" << std::endl;
-    std::cout << "1. Add New Actor" << std::endl;
-    std::cout << "2. Add New Movie" << std::endl;
-    std::cout << "3. Add Actor to a Movie" << std::endl;
-    std::cout << "4. Update Actor Details" << std::endl;
-    std::cout << "5. Update Movie Details" << std::endl;
-    std::cout << "Enter your choice: ";
-    std::cin >> adminChoice;
-
-    switch (adminChoice) {
-    case 1:
-        addActor();
-        break;
-    case 2:
-        addMovie();
-        break;
-    case 3:
-        addActorToMovie();
-        break;
-    case 4:
-        updateActorDetails();
-        break;
-    case 5:
-        updateMovieDetails();
-        break;
-    default:
-        std::cout << "Invalid choice. Returning to main menu.\n";
-    }
-}
-
-void userMenu() {
-    int userChoice;
-
-    std::cout << "\n============= User Menu =============" << std::endl;
-    std::cout << "1. Display Actors by Age Range" << std::endl;
-    std::cout << "2. Display Movies from the Last 3 Years" << std::endl;
-    std::cout << "3. Display Movies by an Actor" << std::endl;
-    std::cout << "4. Display Actors in a Movie" << std::endl;
-    std::cout << "5. Display Actors Known by an Actor" << std::endl;
-    std::cout << "Enter your choice: ";
-    std::cin >> userChoice;
-
-    switch (userChoice) {
-    case 1:
-        displayActorsByAgeRange();
-        break;
-    case 2:
-        displayRecentMovies();
-        break;
-    case 3:
-        displayMoviesByActor();
-        break;
-    case 4:
-        displayActorsByMovie();
-        break;
-    case 5:
-        displayActorsKnownByActor();
-        break;
-    default:
-        std::cout << "Invalid choice. Returning to main menu.\n";
-    }
-}
-
-// Placeholder functions (implement these based on your data structures)
-void addActor() {
-    std::cout << "Adding a new actor... (To be implemented)\n";
-}
-
-void addMovie() {
-    std::cout << "Adding a new movie... (To be implemented)\n";
-}
-
-void addActorToMovie() {
-    std::cout << "Adding an actor to a movie... (To be implemented)\n";
-}
-
-void updateActorDetails() {
-    std::cout << "Updating actor details... (To be implemented)\n";
-}
-
-void updateMovieDetails() {
-    std::cout << "Updating movie details... (To be implemented)\n";
-}
-
-void displayActorsByAgeRange() {
-    std::cout << "Displaying actors by age range... (To be implemented)\n";
-}
-
-void displayRecentMovies() {
-    std::cout << "Displaying movies from the last 3 years... (To be implemented)\n";
-}
-
-void displayMoviesByActor() {
-    std::cout << "Displaying movies by an actor... (To be implemented)\n";
-}
-
-void displayActorsByMovie() {
-    std::cout << "Displaying actors in a movie... (To be implemented)\n";
-}
-
-void displayActorsKnownByActor() {
-    std::cout << "Displaying actors known by an actor... (To be implemented)\n";
 }
