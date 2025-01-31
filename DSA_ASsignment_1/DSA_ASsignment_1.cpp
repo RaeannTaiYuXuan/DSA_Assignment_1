@@ -1,8 +1,11 @@
 #include <iostream>
 #include "Actor.h"
+#include "Movie.h"
+#include "Cast.h"
 using namespace std;
 
 bool isRunning = true; 
+void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot);
 
 
 // display main menu ==============================================================
@@ -15,7 +18,7 @@ void displayMainMenu() {
 }
 
 // display admin menu ==============================================================
-void displayAdminMenu() {
+void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
     int adminChoice;
     do {
         cout << "\n========= Administrator Menu =========" << endl;
@@ -36,16 +39,19 @@ void displayAdminMenu() {
             displayActors(actorRoot);
             break;
         case 2:
-            cout << "Option to add a new movie selected." << endl;
+            cout << "\n========= Add new movie ========= " << endl;
             break;
         case 3:
-            cout << "Option to add an actor to a movie selected." << endl;
+            cout << "\n========= Add actor to a movie ========= " << endl;
+            displayCasts();
+            addActorToMovieWrapper(movieRoot, actorRoot);
+            displayCasts();
             break;
         case 4:
-            cout << "Option to update actor details selected." << endl;
+            cout << "\n========= Update actor details ========= " << endl;
             break;
         case 5:
-            cout << "Option to update movie details selected." << endl;
+            cout << "\n========= Update movie details ========= " << endl;
             break;
         case 0:
             cout << "Exiting application. Goodbye!" << endl;
@@ -73,19 +79,25 @@ void displayUserMenu() {
 
         switch (userChoice) {
         case 1:
-            cout << "Option to display actors between a certain age selected." << endl;
+            cout << "\n========= Display actors between a certain age ========= " << endl;
             break;
         case 2:
-            cout << "Option to display movies made within the past 3 years selected." << endl;
+            cout << "\n========= Display movies made within the past 3 years ========= " << endl;
             break;
         case 3:
-            cout << "Option to display all movies an actor starred in selected." << endl;
+            cout << "\n========= Display all movies an actor starred in ========= " << endl; 
+            displayActors(actorRoot);
+            displayMoviesByActor(castHead, movieRoot, actorRoot);
             break;
         case 4:
-            cout << "Option to display all the actors in a particular movie selected." << endl;
+            cout << "\n========= Display all the actors in a particular movie ========= " << endl; 
+            displayMovies(movieRoot);
+            displayActorsByMovie(castHead, actorRoot);
+            
             break;
         case 5:
-            cout << "Option to display a list of all actors that a particular actor knows selected." << endl;
+            cout << "\n========= Display a list of all actors that a particular actor knows ========= " << endl;
+            displayKnownActors(castHead, actorRoot);
             break;
         case 0:
             cout << "Exiting application. Goodbye!" << endl;
@@ -99,8 +111,15 @@ void displayUserMenu() {
 
 int main() {
     int choice;
+
+    // load data from csv files
     const string actorCSV = "actors.csv";
+    const string movieCSV = "movies.csv";
+    const string castCSV = "cast.csv";
+
     loadActorsFromCSV(actorCSV);
+    loadMoviesFromCSV(movieCSV);
+    loadCastsFromCSV(castCSV);
 
     while (isRunning) {
         displayMainMenu();
@@ -108,7 +127,7 @@ int main() {
 
         switch (choice) {
         case 1:
-            displayAdminMenu();
+            displayAdminMenu(movieRoot, actorRoot);
             break;
         case 2:
             displayUserMenu();
