@@ -205,4 +205,124 @@ void displayActors(Actor* root) {
 }
 
 
+//==================================== raeann s10262832 - search for an actor by ID ====================================
 
+/**
+ Searches for an actor in the AVL tree by ID.
+ root Pointer to the root of the AVL tree.
+ The actor's unique ID to search for.
+ Pointer to the actor if found, otherwise nullptr.
+ */
+
+Actor* searchActorByID(Actor* root, int id) {
+    if (root == nullptr || root->id == id) {
+        return root; // Found the actor or reached a null node
+    }
+
+    if (id < root->id) {
+        return searchActorByID(root->left, id);
+    }
+    else {
+        return searchActorByID(root->right, id);
+    }
+}
+
+//==================================== raeann s10262832 -  function to update the actor details ====================================
+
+/**
+ Updates the details of an existing actor.
+ This function prompts the user for a new name and/or year of birth.
+ If the user enters a blank name or invalid birth year, the previous values remain unchanged.
+ */
+
+void updateActorDetails() {
+    int id;
+    cout << "Enter actor ID to update: ";
+    cin >> id;
+
+    Actor* actor = searchActorByID(actorRoot, id);
+    if (actor == nullptr) {
+        cout << "Error: Actor with ID " << id << " not found.\n";
+        return;
+    }
+
+    string newName;
+    int newYearOfBirth;
+
+    cin.ignore();
+    cout << "Enter new name (leave blank to keep unchanged): ";
+    getline(cin, newName);
+
+    if (!newName.empty()) {
+        actor->name = newName;
+    }
+
+    cout << "Enter new year of birth (or 0 to keep unchanged): ";
+    cin >> newYearOfBirth;
+
+    if (newYearOfBirth >= 1900 && newYearOfBirth <= 2025) {
+        actor->yearOfBirth = newYearOfBirth;
+    }
+    else if (newYearOfBirth != 0) {
+        cout << "Invalid year! Keeping previous value.\n";
+    }
+
+    cout << "Actor details updated successfully!\n";
+}
+
+//==================================== raeann s10262832 -  Function to Display Actors by Age Range ====================================
+
+/*
+Displays actors within a specified age range in ascending order.
+Performs an in-order traversal of the AVL tree to display actors
+whose ages fall between x and y (inclusive).
+Pointer to the root of the AVL tree.
+minAge Minimum age (x).
+maxAge Maximum age (y).
+ */
+
+void displayActorsByAgeRange(Actor* root, int minAge, int maxAge) {
+    if (root == nullptr) return;
+
+    // Traverse left subtree first (to maintain ascending order)
+    displayActorsByAgeRange(root->left, minAge, maxAge);
+
+    // Calculate actor's age
+    int actorAge = 2025 - root->yearOfBirth; // Assuming current year is 2025
+
+    // Check if actor falls within the age range
+    if (actorAge >= minAge && actorAge <= maxAge) {
+        cout << "ID: " << root->id << ", Name: " << root->name
+            << ", Age: " << actorAge << ", Year of Birth: " << root->yearOfBirth << endl;
+    }
+
+    // Traverse right subtree
+    displayActorsByAgeRange(root->right, minAge, maxAge);
+}
+
+//==================================== raeann s10262832 -  Wrapper Function to Get User Input ====================================
+
+/*
+Prompts user for an age range and displays matching actors.
+This function asks the user to enter the minimum (x) and maximum (y) age values,
+validates the input, and calls displayActorsByAgeRange() to show actors within
+the specified range in ascending order.
+ */
+
+void displayActorsByAgeRangeWrapper() {
+    int minAge, maxAge;
+
+    cout << "Enter minimum age (x): ";
+    cin >> minAge;
+
+    cout << "Enter maximum age (y): ";
+    cin >> maxAge;
+
+    if (minAge > maxAge) {
+        cout << "Error: Minimum age cannot be greater than maximum age. Try again.\n";
+        return;
+    }
+
+    cout << "\n===== Actors Aged Between " << minAge << " and " << maxAge << " =====\n";
+    displayActorsByAgeRange(actorRoot, minAge, maxAge);
+}

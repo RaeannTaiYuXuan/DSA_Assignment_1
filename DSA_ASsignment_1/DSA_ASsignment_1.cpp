@@ -5,6 +5,7 @@
 using namespace std;
 
 bool isRunning = true; 
+int currentYear = 0;
 void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot);
 
 
@@ -36,22 +37,37 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
             cout << "\n========= Add new actor ========= " << endl;
             cout << "To exit, enter 0 at any point" << endl;
             addActorWrapper();
+
+            cout << "\n========= Updated Actor List ========= " << endl;
+
             displayActors(actorRoot);
             break;
         case 2:
-            cout << "\n========= Add new movie ========= " << endl;
+            cout << "\n========= Add New Movie ========= " << endl;
+            addMovieWrapper();
+
+            cout << "\n========= Updated Movie List ========= " << endl;
+
+            displayMovies(movieRoot);
             break;
         case 3:
-            cout << "\n========= Add actor to a movie ========= " << endl;
-            displayCasts();
+            cout << "\n========= Add Actor to a movie ========= " << endl;
             addActorToMovieWrapper(movieRoot, actorRoot);
             displayCasts();
             break;
         case 4:
-            cout << "\n========= Update actor details ========= " << endl;
+            cout << "\n========= Update Actor Details ========= " << endl;
+            updateActorDetails();
+
+            cout << "\n========= Updated Actors Details ========= " << endl;
+            displayActors(actorRoot);
             break;
         case 5:
-            cout << "\n========= Update movie details ========= " << endl;
+            cout << "\n========= Update Movie Details ========= " << endl;
+            updateMovieDetails();
+
+            cout << "\n========= Updated Movie Details ========= " << endl;
+            displayMovies(movieRoot);
             break;
         case 0:
             cout << "Exiting application. Goodbye!" << endl;
@@ -80,9 +96,12 @@ void displayUserMenu() {
         switch (userChoice) {
         case 1:
             cout << "\n========= Display actors between a certain age ========= " << endl;
+            displayActorsByAgeRangeWrapper();
             break;
         case 2:
             cout << "\n========= Display movies made within the past 3 years ========= " << endl;
+            currentYear = 1990;
+            displayMoviesByRecentYears(movieRoot, currentYear);
             break;
         case 3:
             cout << "\n========= Display all movies an actor starred in ========= " << endl; 
