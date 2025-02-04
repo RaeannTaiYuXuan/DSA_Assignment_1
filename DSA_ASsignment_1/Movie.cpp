@@ -1,4 +1,5 @@
 #include "Movie.h"
+#include "ChangeLog.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -224,6 +225,11 @@ void updateMovieDetails() {
         cout << "Error: Movie with ID " << id << " not found.\n";
         return;
     }
+
+    // Tam Shi Ying S10257952 - Additional feature (Change history & undo change) ====
+// Store the previous version before updating
+    pushChange("Movie", id, movie->title, movie->year);
+    // ===============================================================================
 
     string newTitle;
     int newYear;

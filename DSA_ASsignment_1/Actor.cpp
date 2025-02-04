@@ -1,4 +1,5 @@
 ﻿#include "Actor.h"
+#include"ChangeLog.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -308,6 +309,14 @@ void updateActorDetails() {
         cout << "Error: Actor with ID " << id << " not found.\n";
         return;
     }
+
+
+
+    // Tam Shi Ying S10257952 - Additional feature (Change history & undo change) ====
+    // Store the previous version before updating
+    pushChange("Actor", id, actor->name, actor->yearOfBirth);
+    // ===============================================================================
+
 
     string newName;
     int newYearOfBirth;
