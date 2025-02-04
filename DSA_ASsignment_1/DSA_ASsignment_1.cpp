@@ -2,7 +2,10 @@
 #include "Actor.h"
 #include "Movie.h"
 #include "Cast.h"
+#include "ChangeLog.h"
 using namespace std;
+
+//====================================  Tam Shi Ying s10257952 - Additional feature (undoing change & change history) ====================================
 
 // Global Variables
 bool isRunning = true;
@@ -83,6 +86,8 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
         cout << "3 : Add an actor to a movie\n";
         cout << "4 : Update actor details\n";
         cout << "5 : Update movie details\n";
+        cout << "6 : Undo last change\n"; 
+        cout << "7 : View change history\n"; 
         cout << "0 : Return to main menu\n";
         cout << "=======================================\n";
         cout << "Enter your choice: ";
@@ -123,7 +128,14 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
             cout << "\n========= Updated Movie Details =========\n";
             displayMovies(movieRoot);
             break;
-
+        case 6:
+            cout << "\n========= Undo Last Change =========\n";
+            undoLastChange();
+            break;
+        case 7:
+            cout << "\n========= Display Change History =========\n";
+            displayChangeHistory();
+            break;
         case 0:
             cout << "\nReturning to Main Menu...\n";
             return;
