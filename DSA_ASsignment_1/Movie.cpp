@@ -250,25 +250,3 @@ void displayMoviesByRecentYears(Movie* root, int currentYear) {
     displayMoviesByRecentYears(root->right, currentYear);
 }
 
-//==================================== Raeann Tai Yu Xuan S10262832J - Wrapper Function to Call Filtering Logic ====================================
-
-/*
-Displays movies released in the past 3 years.
-This function calculates the current year and filters movies that
-were released within the last 3 years using an in-order traversal.
-*/
-void displayMoviesByRecentYears(Movie* root, int currentYear) {
-    if (root == nullptr) return;
-
-    // Traverse left subtree first (to maintain ascending order)
-    displayMoviesByRecentYears(root->left, currentYear);
-
-    // Correct filtering: Only show movies from the past 3 years
-    if (root->year >= (currentYear - 3) && root->year <= currentYear) {
-        cout << "Movie ID: " << root->id << ", Title: \"" << root->title
-            << "\", Year: " << root->year << endl;
-    }
-
-    // Traverse right subtree
-    displayMoviesByRecentYears(root->right, currentYear);
-}
