@@ -8,7 +8,10 @@ using namespace std;
 Movie* movieRoot = nullptr;
 
 Movie::Movie(int movieId, const string& movieTitle, int releaseYear)
-    : id(movieId), title(movieTitle), year(releaseYear), left(nullptr), right(nullptr) {}
+    : id(movieId), title(movieTitle), year(releaseYear),
+    rating(0.0), ratingCount(0),  // Initialize rating and rating count
+    left(nullptr), right(nullptr) {
+}
 
 
 void loadMoviesFromCSV(const string& filename) {
@@ -89,7 +92,10 @@ bool searchMovieByID(Movie* root, int id) {
 void displayMovies(Movie* root) {
     if (root != nullptr) {
         displayMovies(root->left);
-        cout << "Movie ID: " << root->id << ", Title: " << root->title << ", Year: " << root->year << endl;
+        cout << "ID: " << root->id << ", Title: " << root->title
+            << ", Year: " << root->year
+            << ", Rating: " << (root->ratingCount > 0 ? to_string(root->rating) : "No ratings yet")
+            << endl;
         displayMovies(root->right);
     }
 }
@@ -123,9 +129,16 @@ void addMovieWrapper() {
     int id, year;
     string title;
 
+    // Get Movie ID
     while (true) {
         cout << "Enter movie ID (or 0 to cancel): ";
-        cin >> id;
+        if (!(cin >> id)) {  // Check if input is valid
+            cout << "Invalid input, try again.\n";
+            cin.clear();                // Clear the error flag
+            cin.ignore(1000, '\n');     // Clear any invalid input
+            continue;
+        }
+
         if (id == 0) {
             cout << "Movie addition canceled.\n";
             return;
@@ -133,34 +146,43 @@ void addMovieWrapper() {
 
         if (searchMovieByID(movieRoot, id)) {
             cout << "Error: Movie with this ID already exists. Try again.\n";
-        }
-        else {
+        } else {
+            cin.ignore(1000, '\n');  // Clear newline after valid numeric input
             break;
         }
     }
 
-    cin.ignore();
+    // Get Movie Title
     while (true) {
         cout << "Enter movie title: ";
-        getline(cin, title);
-        if (!title.empty()) {
-            break;
+        getline(cin, title);  // Read the entire line including spaces
+        if (!title.empty() && title.find_first_not_of(' ') != string::npos) { 
+            break;  // Title is valid if it's not just spaces
         }
         cout << "Error: Title cannot be empty. Try again.\n";
     }
 
+    // Get Year of Release
     while (true) {
         cout << "Enter year of release: ";
-        cin >> year;
+        if (!(cin >> year)) {  // Validate numeric input
+            cout << "Invalid input, try again.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');  // Clear any invalid input
+            continue;
+        }
+
         if (year >= 1900 && year <= 2025) {
             break;
         }
         cout << "Error: Please enter a valid year between 1900 and 2025.\n";
     }
 
+    // Add the Movie
     movieRoot = addMovie(movieRoot, id, title, year);
     cout << "Movie added successfully!\n";
 }
+
 
 //==================================== Raeann Tai Yu Xuan S10262832J - Search for a Movie by ID  ====================================
 
@@ -235,18 +257,98 @@ Pointer to the root of the BST.
 currentYear The current year to calculate the 3-year range.
  */
 void displayMoviesByRecentYears(Movie* root, int currentYear) {
-    if (root == nullptr) return;
-
-    // Traverse left subtree first (to maintain ascending order)
-    displayMoviesByRecentYears(root->left, currentYear);
-
-    // Check if the movie was released within the last 3 years
-    if (root->year >= (currentYear - 3)) {
-        cout << "Movie ID: " << root->id << ", Title: " << root->title
-            << ", Year: " << root->year << endl;
+    if (root == nullptr) {
+        return;  // Base case: if the node is null, exit the function
     }
 
-    // Traverse right subtree
+    // Traverse the left subtree (smaller years)
+    displayMoviesByRecentYears(root->left, currentYear);
+
+    // Check if the movie's year is within the last 3 years
+    if (root->year >= currentYear - 3 && root->year <= currentYear) {
+        cout << "Movie ID: " << root->id 
+             << ", Title: \"" << root->title 
+             << "\", Year: " << root->year << endl;
+    }
+
+    // Traverse the right subtree (larger years)
     displayMoviesByRecentYears(root->right, currentYear);
 }
+
+
+
+//========== Raeann Tai Yu Xuan S10262832J - advance (ratings) ============
+
+/*
+Allows a user to rate a movie.
+Prompts for movie ID and rating, then updates the average rating.
+ */
+void rateMovie(Movie* root) {
+    if (root == nullptr) {
+        cout << "Error: No movies available to rate.\n";
+        return;
+    }
+
+    int movieID;
+    cout << "Enter Movie ID to rate: ";
+    if (!(cin >> movieID)) {
+        cout << "Invalid input. Please enter a numeric Movie ID.\n";
+        cin.clear();               // Clear error flag
+        cin.ignore(1000, '\n');    // Discard invalid input
+        return;
+    }
+
+    Movie* movie = searchMovieByIDNode(root, movieID);
+    if (movie == nullptr) {
+        cout << "Error: Movie with ID " << movieID << " not found.\n";
+        return;
+    }
+
+    float rating;
+    while (true) {
+        cout << "Enter your rating for \"" << movie->title << "\" (0 - 5): ";
+
+        if (!(cin >> rating)) {
+            cout << "Invalid input. Please enter a number between 0 and 5.\n";
+            cin.clear();               // Clear error flag
+            cin.ignore(1000, '\n');    // Discard invalid input
+            continue;                  // Prompt again
+        }
+
+        if (rating < 0.0 || rating > 5.0) {
+            cout << "Invalid rating! Please enter a value between 0 and 5.\n";
+        }
+        else {
+            break;  // Valid rating, exit loop
+        }
+    }
+
+    // Update average rating
+    movie->rating = ((movie->rating * movie->ratingCount) + rating) / (movie->ratingCount + 1);
+    movie->ratingCount++;
+
+    cout << "Rating submitted successfully for \"" << movie->title << "\"!\n";
+
+    // Display updated movie details
+    cout << "\n========= Rated Movie Details =========" << endl;
+    cout << "ID: " << movie->id
+        << "\nTitle: " << movie->title
+        << "\nYear: " << movie->year
+        << "\nRating: ";
+
+    int fullStars = static_cast<int>(movie->rating);
+    fullStars = std::min(fullStars, 5);  // Cap the stars at 5
+
+    for (int i = 0; i < fullStars; ++i) {
+        cout << "*";
+    }
+    for (int i = fullStars; i < 5; ++i) {
+        cout << ".";
+    }
+
+
+    cout << " (" << movie->rating << "/5 from " << movie->ratingCount << " ratings)" << endl;
+}
+
+
 
