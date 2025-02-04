@@ -135,6 +135,11 @@ Actor* addActor(Actor* root, int id, const string& name, int yearOfBirth) {
     return root;
 }
 
+void clearInputBuffer() {
+    cin.clear();  
+    while (cin.get() != '\n');  
+}
+
 void addActorWrapper() {
     int id;
     string name;
@@ -142,51 +147,63 @@ void addActorWrapper() {
 
     while (true) {
         cout << "Enter actor ID (or 0 to exit): ";
-        cin >> id;
+
+        if (!(cin >> id)) {
+            cout << "Error: Invalid input. Please enter a numeric ID.\n";
+            clearInputBuffer();  
+            continue;
+        }
+
         if (id == 0) {
             cout << "Exiting add actor process..." << endl;
             return;
         }
 
         if (searchDuplicateID(actorRoot, id)) {
-            cout << "Error: Actor with this ID already exists. Please try again." << endl;
+            cout << "Error: Actor with this ID already exists. Please try again.\n";
         }
         else {
             break;
         }
     }
 
-    cin.ignore(); 
+    clearInputBuffer(); 
+
     while (true) {
         cout << "Enter actor name: ";
         getline(cin, name);
 
         if (name == "0") {
-            cout << "Exiting add actor process...\n" << endl;
+            cout << "Exiting add actor process...\n";
             return;
         }
 
-        if (!name.empty()) {
+        if (!name.empty() && name.find_first_not_of(" \t") != string::npos) {
             break;
         }
 
-        cout << "Error: Name cannot be empty. Please try again." << endl;
+        cout << "Error: Name cannot be empty or spaces only. Please try again.\n";
     }
 
     while (true) {
         cout << "Enter year of birth: ";
-        cin >> yearOfBirth;
+
+        if (!(cin >> yearOfBirth)) {
+            cout << "Error: Invalid input. Please enter a valid year.\n";
+            clearInputBuffer();
+            continue;
+        }
 
         if (yearOfBirth == 0) {
-            cout << "Exiting add actor process...\n" << endl;
+            cout << "Exiting add actor process...\n";
             return;
         }
 
-        if (yearOfBirth > 1900 && yearOfBirth <= 2025) {
+        if (yearOfBirth >= 1900 && yearOfBirth <= 2025) {
             break;
         }
 
-        cout << "Error: Please enter a valid year of birth (between 1900 and 2025)." << endl;
+        cout << "Error: Please enter a valid year of birth (between 1900 and 2025).\n";
     }
 
     actorRoot = addActor(actorRoot, id, name, yearOfBirth);
