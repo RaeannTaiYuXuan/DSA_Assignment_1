@@ -7,6 +7,8 @@
 #include <sstream>
 using namespace std;
 
+//====================================  Tam Shi Ying s10257952 - Cast.cpp ====================================
+
 Cast* castHead = nullptr;
 Cast* castIndex[MAX_CAST_SIZE] = { nullptr };
 int castCount = 0;
@@ -14,6 +16,10 @@ int castCount = 0;
 Cast::Cast(int personId, int movieId) : person_id(personId), movie_id(movieId), next(nullptr) {}
 
 // build cast index ==============================================================
+/**
+ * Builds an indexed array for binary search from the linked list of cast members.
+ * This helps in optimizing the search for cast members in movies.
+ */
 void buildCastIndex(Cast* head) {
     Cast* current = head;
     int index = 0;
@@ -25,6 +31,10 @@ void buildCastIndex(Cast* head) {
 }
 
 // binary search cast ==============================================================
+/**
+ * Performs binary search on the indexed cast list to find a specific actor-movie pairing.
+ * Returns a pointer to the Cast object if found, otherwise returns nullptr.
+ */
 Cast* binarySearchCast(int personId, int movieId) {
     int left = 0, right = castCount - 1;
     while (left <= right) {
@@ -44,6 +54,10 @@ Cast* binarySearchCast(int personId, int movieId) {
 }
 
 // load casts from csv ==============================================================
+/**
+ * Loads cast data from a CSV file and adds them to the linked list.
+ * Also prevents duplicate cast pairs from being inserted.
+ */
 void loadCastsFromCSV(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -91,10 +105,19 @@ void loadCastsFromCSV(const string& filename) {
     buildCastIndex(castHead);
 }
 
+
+/**
+ * Checks whether a cast (actor-movie pair) already exists in the index.
+ */
 bool doesCastExist(int personId, int movieId) {
     return binarySearchCast(personId, movieId) != nullptr;
 }
 
+
+/**
+ * Adds a new cast entry (actor-movie pair) in sorted order.
+ * If the actor is already associated with the movie, it prevents duplication.
+ */
 bool addCastSorted(Cast*& head, int personId, int movieId) {
     if (doesCastExist(personId, movieId)) {
         cout << "Error: This actor is already associated with this movie." << endl;
@@ -127,6 +150,9 @@ bool addCastSorted(Cast*& head, int personId, int movieId) {
 }
 
 
+/**
+ * Displays all actor-movie associations stored in the cast index.
+ */
 void displayCasts() {
     for (int i = 0; i < castCount; ++i) {
         cout << "Actor ID: " << castIndex[i]->person_id
@@ -135,7 +161,11 @@ void displayCasts() {
 }
 
 
-
+//====================================  Tam Shi Ying s10257952 - Add actor to movie ====================================
+/**
+ * Adds an actor to a movie by taking input from the user.
+ * Ensures that both the actor and movie exist before adding.
+ */
 void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
     int actorId, movieId;
 
@@ -183,6 +213,12 @@ void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
     }
 }
 
+
+//====================================  Tam Shi Ying s10257952 - Display movies by actor ====================================
+/**
+ * Displays all movies associated with a given actor.
+ * Uses binary search on the actor-movie list.
+ */
 void displayMoviesByActor(Cast* castHead, Movie* movieRoot, Actor* actorRoot) {
     int actorId;
 
@@ -268,7 +304,10 @@ void displayMoviesByActor(Cast* castHead, Movie* movieRoot, Actor* actorRoot) {
 
 
 
-
+//====================================  Tam Shi Ying s10257952 - Display actors by movie ====================================
+/**
+ * Displays all actors who starred in a given movie.
+ */
 void displayActorsByMovie(Cast* castHead, Actor* actorRoot) {
     int movieId;
 
@@ -366,7 +405,11 @@ void displayActorsByMovie(Cast* castHead, Actor* actorRoot) {
 }
 
 
-
+//====================================  Tam Shi Ying s10257952 - Display known actors ====================================
+/**
+ * Displays actors who have worked with a given actor based on shared movies.
+ * Also extends to find second-degree connections (actors who worked with known actors).
+ */
 void displayKnownActors(Cast* castHead, Actor* actorRoot) {
     int actorId;
 

@@ -129,7 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="ActorsKnownHastTable.cpp" />
+    <ClCompile Include="ActorsKnownHashTable.cpp" />
     <ClCompile Include="Cast.cpp" />
     <ClCompile Include="DSA_ASsignment_1.cpp" />
     <ClCompile Include="Movie.cpp" />

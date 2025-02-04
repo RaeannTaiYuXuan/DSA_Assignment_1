@@ -15,10 +15,29 @@ struct Movie {
 	Movie(int movieId, const string& movieTitle, int releaseYear);
 };
 
+
+/**
+ * Loads movie data from a CSV file and inserts them into the BST.
+ * Ensures proper storage of movie details for later retrieval.
+ */
 void loadMoviesFromCSV(const string& filename);
+
+//====================================  Tam Shi Ying s10257952 ====================================
+/**
+ * Searches for a movie in the BST by its unique ID.
+ * Returns true if the movie is found, otherwise returns false.
+ */
 bool searchMovieByID(Movie* root, int id);
+
+//====================================  Tam Shi Ying s10257952 ====================================
+/**
+ * Displays all movies stored in the BST using an in-order traversal.
+ * Ensures movies are listed in ascending order based on their ID.
+ */
 void displayMovies(Movie* root);
-extern Movie* movieRoot;
+
+
+extern Movie* movieRoot; // Global pointer to the root of the Movie BST
 
 
 
