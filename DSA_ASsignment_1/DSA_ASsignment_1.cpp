@@ -4,134 +4,21 @@
 #include "Cast.h"
 using namespace std;
 
-bool isRunning = true; 
+// Global Variables
+bool isRunning = true;
 int currentYear = 0;
+
+// Function Prototypes
+void displayMainMenu();
+void displayAdminMenu(Movie* movieRoot, Actor* actorRoot);
+void displayUserMenu();
 void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot);
 
-
-// display main menu ==============================================================
-void displayMainMenu() {
-    cout << "========= Movie Application Menu =========" << endl;
-    cout << "1 : Administrator menu" << endl;
-    cout << "2 : User menu" << endl;
-    cout << "0 : Exit" << endl;
-    cout << "Enter your choice: ";
-}
-
-// display admin menu ==============================================================
-void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
-    int adminChoice;
-    do {
-        cout << "\n========= Administrator Menu =========" << endl;
-        cout << "1 : Add new actor" << endl;
-        cout << "2 : Add new movie" << endl;
-        cout << "3 : Add an actor to a movie" << endl;
-        cout << "4 : Update actor details" << endl;
-        cout << "5 : Update movie details" << endl;
-        cout << "0 : Exit" << endl;
-        cout << "Enter your choice: ";
-        cin >> adminChoice;
-
-        switch (adminChoice) {
-        case 1:
-            cout << "\n========= Add new actor ========= " << endl;
-            cout << "To exit, enter 0 at any point" << endl;
-            addActorWrapper();
-
-            cout << "\n========= Updated Actor List ========= " << endl;
-
-            displayActors(actorRoot);
-            break;
-        case 2:
-            cout << "\n========= Add New Movie ========= " << endl;
-            addMovieWrapper();
-
-            cout << "\n========= Updated Movie List ========= " << endl;
-
-            displayMovies(movieRoot);
-            break;
-        case 3:
-            cout << "\n========= Add Actor to a movie ========= " << endl;
-            addActorToMovieWrapper(movieRoot, actorRoot);
-            displayCasts();
-            break;
-        case 4:
-            cout << "\n========= Update Actor Details ========= " << endl;
-            updateActorDetails();
-
-            cout << "\n========= Updated Actors Details ========= " << endl;
-            displayActors(actorRoot);
-            break;
-        case 5:
-            cout << "\n========= Update Movie Details ========= " << endl;
-            updateMovieDetails();
-
-            cout << "\n========= Updated Movie Details ========= " << endl;
-            displayMovies(movieRoot);
-            break;
-        case 0:
-            cout << "Exiting application. Goodbye!" << endl;
-            isRunning = false;
-            break;
-        default:
-            cout << "Invalid choice. Please try again." << endl;
-        }
-    } while (isRunning);
-}
-
-// display user menu ==============================================================
-void displayUserMenu() {
-    int userChoice;
-    do {
-        cout << "\n========= User Menu =========" << endl;
-        cout << "1 : Display actors between a certain age" << endl;
-        cout << "2 : Display movies made within the past 3 years" << endl;
-        cout << "3 : Display all movies an actor starred in" << endl;
-        cout << "4 : Display all the actors in a particular movie" << endl;
-        cout << "5 : Display a list of all actors that a particular actor knows" << endl;
-        cout << "0 : Exit" << endl;
-        cout << "Enter your choice: ";
-        cin >> userChoice;
-
-        switch (userChoice) {
-        case 1:
-            cout << "\n========= Display actors between a certain age ========= " << endl;
-            displayActorsByAgeRangeWrapper();
-            break;
-        case 2:
-            cout << "\n========= Display movies made within the past 3 years ========= " << endl;
-            currentYear = 1990;
-            displayMoviesByRecentYears(movieRoot, currentYear);
-            break;
-        case 3:
-            cout << "\n========= Display all movies an actor starred in ========= " << endl; 
-            displayActors(actorRoot);
-            displayMoviesByActor(castHead, movieRoot, actorRoot);
-            break;
-        case 4:
-            cout << "\n========= Display all the actors in a particular movie ========= " << endl; 
-            displayMovies(movieRoot);
-            displayActorsByMovie(castHead, actorRoot);
-            
-            break;
-        case 5:
-            cout << "\n========= Display a list of all actors that a particular actor knows ========= " << endl;
-            displayKnownActors(castHead, actorRoot);
-            break;
-        case 0:
-            cout << "Exiting application. Goodbye!" << endl;
-            isRunning = false;
-            break;
-        default:
-            cout << "Invalid choice. Please try again." << endl;
-        }
-    } while (isRunning);
-}
-
+// ============================= Main Function =============================
 int main() {
     int choice;
 
-    // load data from csv files
+    // Load data from CSV files
     const string actorCSV = "actors.csv";
     const string movieCSV = "movies.csv";
     const string castCSV = "cast.csv";
@@ -140,9 +27,17 @@ int main() {
     loadMoviesFromCSV(movieCSV);
     loadCastsFromCSV(castCSV);
 
+    // Main Menu Loop
     while (isRunning) {
         displayMainMenu();
-        cin >> choice;
+
+        cout << "Enter your choice: ";
+        if (!(cin >> choice)) {  // Check if input is not an integer
+            cout << "\nInvalid input. Please enter a number.\n";
+            cin.clear();              // Clear the error flag
+            cin.ignore(1000, '\n');   // Discard invalid input
+            continue;                 // Re-prompt the user
+        }
 
         switch (choice) {
         case 1:
@@ -152,13 +47,159 @@ int main() {
             displayUserMenu();
             break;
         case 0:
-            cout << "Exiting application. Goodbye!" << endl;
+            cout << "\nExiting application. Goodbye!\n";
             isRunning = false;
             break;
         default:
-            cout << "Invalid choice. Please try again." << endl;
+            cout << "\nInvalid choice. Please select a valid option from the menu.\n";
         }
-    } 
+    }
 
     return 0;
+}
+
+
+// ============================= Display Menus =============================
+
+// Main Menu
+void displayMainMenu() {
+
+    cout << "\n========= Movie Application Menu =========\n";
+    cout << "1 : Administrator menu\n";
+    cout << "2 : User menu\n";
+    cout << "0 : Exit\n";
+    cout << "===========================================\n";
+    cout << "Enter your choice: ";
+}
+
+// Administrator Menu
+void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
+    int adminChoice;
+
+    do {
+        cout << "\n========= Administrator Menu =========\n";
+        cout << "1 : Add new actor\n";
+        cout << "2 : Add new movie\n";
+        cout << "3 : Add an actor to a movie\n";
+        cout << "4 : Update actor details\n";
+        cout << "5 : Update movie details\n";
+        cout << "0 : Return to main menu\n";
+        cout << "=======================================\n";
+        cout << "Enter your choice: ";
+        cin >> adminChoice;
+
+        switch (adminChoice) {
+        case 1:
+            cout << "\n========= Add New Actor =========\n";
+            cout << "To exit, enter 0 at any point.\n";
+            addActorWrapper();
+            cout << "\n========= Updated Actor List =========\n";
+            displayActors(actorRoot);
+            break;
+
+        case 2:
+            cout << "\n========= Add New Movie =========\n";
+            addMovieWrapper();
+            cout << "\n========= Updated Movie List =========\n";
+            displayMovies(movieRoot);
+            break;
+
+        case 3:
+            cout << "\n========= Add Actor to a Movie =========\n";
+            addActorToMovieWrapper(movieRoot, actorRoot);
+            displayCasts();
+            break;
+
+        case 4:
+            cout << "\n========= Update Actor Details =========\n";
+            updateActorDetails();
+            cout << "\n========= Updated Actor Details =========\n";
+            displayActors(actorRoot);
+            break;
+
+        case 5:
+            cout << "\n========= Update Movie Details =========\n";
+            updateMovieDetails();
+            cout << "\n========= Updated Movie Details =========\n";
+            displayMovies(movieRoot);
+            break;
+
+        case 0:
+            cout << "\nReturning to Main Menu...\n";
+            return;
+
+        default:
+            cout << "\nInvalid choice. Please try again.\n";
+        }
+    } while (isRunning);
+}
+
+// User Menu
+void displayUserMenu() {
+    int userChoice;
+
+    do {
+        cout << "\n========= User Menu =========\n";
+        cout << "1 : Display actors between a certain age\n";
+        cout << "2 : Display movies made within the past 3 years\n";
+        cout << "3 : Display all movies an actor starred in\n";
+        cout << "4 : Display all the actors in a particular movie\n";
+        cout << "5 : Display a list of all actors that a particular actor knows\n";
+        cout << "6 : Rate an actor\n";
+        cout << "7 : Rate a movie\n";
+        cout << "0 : Return to main menu\n";
+        cout << "==============================\n";
+        cout << "Enter your choice: ";
+        cin >> userChoice;
+
+        switch (userChoice) {
+        case 1:
+            cout << "\n========= Display Actors Between a Certain Age =========\n";
+            displayActorsByAgeRangeWrapper();
+            break;
+
+        case 2:
+            cout << "\n========= Display Movies Made Within the Past 3 Years =========\n";
+            currentYear = 1990;  // Adjust current year as needed
+            displayMoviesByRecentYears(movieRoot, currentYear);
+            break;
+
+        case 3:
+            cout << "\n========= Display All Movies an Actor Starred In =========\n";
+            displayActors(actorRoot);
+            displayMoviesByActor(castHead, movieRoot, actorRoot);
+            break;
+
+        case 4:
+            cout << "\n========= Display All Actors in a Particular Movie =========\n";
+            displayMovies(movieRoot);
+            displayActorsByMovie(castHead, actorRoot);
+            break;
+
+        case 5:
+            cout << "\n========= Display a List of All Actors That a Particular Actor Knows =========\n";
+            displayKnownActors(castHead, actorRoot);
+            break;
+
+        case 6:
+            cout << "\n========= Rated Actor =========\n";
+            displayActors(actorRoot);
+            cout << "\n";
+            rateActor(actorRoot);
+            break;
+        case 7:
+            cout << "\n========= Rated Movie =========\n";
+            displayMovies(movieRoot);
+            cout << "\n";
+            rateMovie(movieRoot);
+            break;
+
+        case 0:
+            cout << "\nReturning to Main Menu...\n";
+            return;
+
+        default:
+            cout << "\nInvalid choice. Please try again.\n";
+        }
+    } while (isRunning);
 }

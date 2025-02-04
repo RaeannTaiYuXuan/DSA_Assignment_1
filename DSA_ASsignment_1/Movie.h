@@ -9,6 +9,9 @@ struct Movie {
 	Movie* left;
 	Movie* right;
 
+	float rating;
+	int ratingCount;
+
 	Movie(int movieId, const string& movieTitle, int releaseYear);
 };
 
@@ -17,11 +20,13 @@ bool searchMovieByID(Movie* root, int id);
 void displayMovies(Movie* root);
 extern Movie* movieRoot;
 
+
+
 //==================================== Raeann Tai Yu Xuan S10262832J ====================================
 void addMovieWrapper();
 Movie* addMovie(Movie* root, int id, const string& title, int year);
 
-//==================================== Raeann Tai Yu Xuan S10262832J ====================================
+
 /*
  Searches for a movie in the BST by ID.
  Pointer to the root node of the BST.
@@ -30,7 +35,7 @@ Movie* addMovie(Movie* root, int id, const string& title, int year);
  */
 Movie* searchMovieByIDNode(Movie* root, int id);
 
-//==================================== Raeann Tai Yu Xuan S10262832J ====================================
+
 /**
  Allows an administrator to update a movie's details.
  This function prompts for a new title and/or release year.
@@ -39,7 +44,7 @@ Movie* searchMovieByIDNode(Movie* root, int id);
 void updateMovieDetails();
 
 
-//==================================== Raeann Tai Yu Xuan S10262832J ====================================
+
 /*
 Displays movies released in the past 3 years in ascending order.
 This function performs an in-order traversal of the movie BST
@@ -50,13 +55,12 @@ currentYear: The current year to calculate the 3-year range.
 */
 void displayMoviesByRecentYears(Movie* root, int currentYear);
 
-//==================================== Raeann Tai Yu Xuan S10262832J ====================================
-/*
-Displays movies released in the past 3 years.
-This function calculates the current year and filters movies that
-were released within the last 3 years using an in-order traversal.
-*/
-void displayMoviesByRecentYearsWrapper();
+//========================================================================================================
 
 
 
+//========== Raeann Tai Yu Xuan S10262832J - advance (ratings) ===========================================
+void rateMovie(Movie* root);
+void displayMovies(Movie* root); 
+
+//========================================================================================================
