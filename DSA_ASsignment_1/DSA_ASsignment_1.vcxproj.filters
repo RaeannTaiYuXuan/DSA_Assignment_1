@@ -27,7 +27,7 @@
     <ClCompile Include="Movie.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ActorsKnownHastTable.cpp">
+    <ClCompile Include="ActorsKnownHashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

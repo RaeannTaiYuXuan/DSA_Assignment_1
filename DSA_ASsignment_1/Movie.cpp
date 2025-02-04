@@ -72,7 +72,7 @@ void loadMoviesFromCSV(const string& filename) {
     file.close();
 }
 
-
+//====================================  Tam Shi Ying s10257952 - search movie by ID ====================================
 bool searchMovieByID(Movie* root, int id) {
     if (root == nullptr) {
         return false;
@@ -89,6 +89,8 @@ bool searchMovieByID(Movie* root, int id) {
     }
 }
 
+
+//====================================  Tam Shi Ying s10257952 - Display movies ====================================
 void displayMovies(Movie* root) {
     if (root != nullptr) {
         displayMovies(root->left);
