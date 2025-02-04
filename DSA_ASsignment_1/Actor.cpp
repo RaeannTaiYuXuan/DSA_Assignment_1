@@ -1,4 +1,4 @@
-#include "Actor.h"
+﻿#include "Actor.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -7,7 +7,10 @@ using namespace std;
 Actor* actorRoot = nullptr;
 
 Actor::Actor(int actorId, string actorName, int birthYear)
-    : id(actorId), name(actorName), yearOfBirth(birthYear), height(1), left(nullptr), right(nullptr) {}
+    : id(actorId), name(actorName), yearOfBirth(birthYear),
+    height(1), left(nullptr), right(nullptr),
+    rating(0.0), ratingCount(0) {  
+}
 
 int getHeight(Actor* node) {
     return node ? node->height : 0;
@@ -81,17 +84,18 @@ void loadActorsFromCSV(const string& filename) {
 bool searchDuplicateID(Actor* root, int id) {
     while (root != nullptr) {
         if (id == root->id) {
-            return true; 
+            return true;
         }
         if (id < root->id) {
-            root = root->left; 
+            root = root->left;
         }
         else {
-            root = root->right; 
+            root = root->right;
         }
     }
-    return false; 
+    return false;
 }
+
 
 // add actor function =======================================================
 Actor* addActor(Actor* root, int id, const string& name, int yearOfBirth) {
@@ -122,7 +126,7 @@ Actor* addActor(Actor* root, int id, const string& name, int yearOfBirth) {
         return rotateLeft(root);
     }
 
-    if (balance > 1 && id > root->left->id) {
+    if (balance > 1 && id > root->left->id) { 
         root->left = rotateLeft(root->left);
         return rotateRight(root);
     }
@@ -213,16 +217,24 @@ void addActorWrapper() {
 
 
 // display actors ====================================================
+
 void displayActors(Actor* root) {
-    if (root != nullptr) {
-        displayActors(root->left);
-        cout << "ID: " << root->id << ", Name: " << root->name << ", Year of Birth: " << root->yearOfBirth << endl;
-        displayActors(root->right);
+    if (root == nullptr) {  // Base case: if the tree is empty
+        return;
     }
+
+    displayActors(root->left);
+    cout << "ID: " << root->id << ", Name: " << root->name
+        << ", Year of Birth: " << root->yearOfBirth
+        << ", Rating: " << (root->ratingCount > 0 ? to_string(root->rating) : "No ratings yet")
+        << endl;
+    displayActors(root->right);
 }
 
 
-//==================================== raeann s10262832 - search for an actor by ID ====================================
+
+
+//====================================  Raeann Tai Yu Xuan s10262832 - search for an actor by ID ====================================
 
 /**
  Searches for an actor in the AVL tree by ID.
@@ -235,7 +247,6 @@ Actor* searchActorByID(Actor* root, int id) {
     if (root == nullptr || root->id == id) {
         return root; // Found the actor or reached a null node
     }
-
     if (id < root->id) {
         return searchActorByID(root->left, id);
     }
@@ -244,7 +255,8 @@ Actor* searchActorByID(Actor* root, int id) {
     }
 }
 
-//==================================== raeann s10262832 -  function to update the actor details ====================================
+
+//====================================  Raeann Tai Yu Xuan s10262832 -  function to update the actor details ====================================
 
 /**
  Updates the details of an existing actor.
@@ -287,7 +299,7 @@ void updateActorDetails() {
     cout << "Actor details updated successfully!\n";
 }
 
-//==================================== raeann s10262832 -  Function to Display Actors by Age Range ====================================
+//====================================  Raeann Tai Yu Xuan s10262832 -  Function to Display Actors by Age Range ====================================
 
 /*
 Displays actors within a specified age range in ascending order.
@@ -317,7 +329,7 @@ void displayActorsByAgeRange(Actor* root, int minAge, int maxAge) {
     displayActorsByAgeRange(root->right, minAge, maxAge);
 }
 
-//==================================== raeann s10262832 -  Wrapper Function to Get User Input ====================================
+//====================================  Raeann Tai Yu Xuan s10262832 -  Wrapper Function to Get User Input ====================================
 
 /*
 Prompts user for an age range and displays matching actors.
@@ -343,3 +355,69 @@ void displayActorsByAgeRangeWrapper() {
     cout << "\n===== Actors Aged Between " << minAge << " and " << maxAge << " =====\n";
     displayActorsByAgeRange(actorRoot, minAge, maxAge);
 }
+
+
+//========== Raeann Tai Yu Xuan S10262832J - advance (ratings) ============
+
+
+/*
+Allows a user to rate an actor.
+Prompts for actor ID and rating, then updates the average rating.
+ */
+void rateActor(Actor* root) {
+    if (root == nullptr) {  // Check if the tree is empty
+        cout << "Error: No actors available to rate.\n";
+        return;
+    }
+
+    int actorID;
+    cout << "Enter Actor ID to rate: ";
+    cin >> actorID;
+
+    // Search for the actor by ID safely
+    Actor* actor = searchActorByID(root, actorID);
+    if (actor == nullptr) {
+        cout << "Error: Actor with ID " << actorID << " not found.\n";
+        return;
+    }
+
+    // Get rating input
+    float rating;
+    cout << "Enter your rating for " << actor->name << " (0 - 5): ";
+    cin >> rating;
+
+    // Validate rating
+    if (rating < 0.0 || rating > 5.0) {
+        cout << "Invalid rating! Please enter a value between 0 and 5.\n";
+        return;
+    }
+
+    // Update average rating
+    actor->rating = ((actor->rating * actor->ratingCount) + rating) / (actor->ratingCount + 1);
+    actor->ratingCount++;
+
+    // Confirm rating submission
+    cout << "Rating submitted successfully for " << actor->name << "!\n";
+
+    // Display the rated actor's updated information
+    cout << "\n========= Rated Actor Details =========" << endl;
+    cout << "ID:" << actor->id
+        << "\nName: " << actor->name
+        << "\nYear of Birth: " << actor->yearOfBirth
+        << "\nRating: ";
+
+    // Display stars based on average rating
+    int fullStars = static_cast<int>(actor->rating);
+    for (int i = 0; i < fullStars; ++i) {
+        cout << "*";
+    }
+    for (int i = fullStars; i < 5; ++i) {
+        cout << ".";
+    }
+
+
+    cout << " (" << actor->rating << "/5 from " << actor->ratingCount << " ratings)" << endl;
+}
+
+
+

@@ -10,6 +10,10 @@ struct Actor {
     Actor* left;
     Actor* right;
 
+    //========== Raeann Tai Yu Xuan S10262832J - advance (ratings) ============
+    float rating;     
+    int ratingCount;
+    
     Actor(int actorId, string actorName, int birthYear);
 };
 
@@ -22,6 +26,11 @@ extern Actor* actorRoot;
 
 
 
+//========== Raeann Tai Yu Xuan S10262832J - advance (ratings) ============
+void rateActor(Actor* root);
+
+
+
 //==================================== Raeann Tai Yu Xuan S10262832J - search for an actor by ID ====================================
 /**
  Searches for an actor in the AVL tree by ID.
@@ -29,7 +38,8 @@ extern Actor* actorRoot;
  id Unique ID of the actor to search.
  Pointer to the found actor, or nullptr if not found.
  */
-Actor* searchActorByID(Actor* root, int id);
+Actor* searchActorByID(Actor* root, int id);  
+
 
 //==================================== Raeann Tai Yu Xuan S10262832J - Update Actor Details ====================================
 /**
@@ -39,7 +49,7 @@ Actor* searchActorByID(Actor* root, int id);
  */
 void updateActorDetails();
 
-//==================================== Raeann Tai Yu Xuan S10262832J - Update Actor Details ====================================
+//==================================== Raeann Tai Yu Xuan S10262832J - Update Actor Details by Age ====================================
 /*
 Displays actors within a specified age range in ascending order.
 Performs an in-order traversal of the AVL tree to display actors
@@ -50,7 +60,7 @@ maxAge Maximum age (y).
  */
 void displayActorsByAgeRange(Actor* root, int minAge, int maxAge);
 
-//==================================== Raeann Tai Yu Xuan S10262832J - Update Actor Details ====================================
+//==================================== Raeann Tai Yu Xuan S10262832J - Update Actor Details wrapper ====================================
 /*
 Prompts user for an age range and displays matching actors.
 This function asks the user to enter the minimum (x) and maximum (y) age values,
@@ -58,3 +68,6 @@ validates the input, and calls displayActorsByAgeRange() to show actors within
 the specified range in ascending order.
  */
 void displayActorsByAgeRangeWrapper();
+
+
+void displayActors(Actor* root); 
