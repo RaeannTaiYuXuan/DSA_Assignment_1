@@ -1,4 +1,5 @@
 ﻿#include "Actor.h"
+#include"ChangeLog.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -12,14 +13,29 @@ Actor::Actor(int actorId, string actorName, int birthYear)
     rating(0.0), ratingCount(0) {  
 }
 
+
+/**
+ * Returns the height of a given node in the AVL tree.
+ * If the node is null, returns 0.
+ */
 int getHeight(Actor* node) {
     return node ? node->height : 0;
 }
 
+
+/**
+ * Calculates the balance factor of a given node in the AVL tree.
+ * A positive value means left-heavy, a negative value means right-heavy.
+ */
 int getBalanceFactor(Actor* node) {
     return node ? getHeight(node->left) - getHeight(node->right) : 0;
 }
 
+
+/**
+ * Performs a right rotation on a given node in the AVL tree.
+ * Used for balancing the tree when the left subtree is too tall.
+ */
 Actor* rotateRight(Actor* y) {
     Actor* x = y->left;
     Actor* T2 = x->right;
@@ -33,6 +49,11 @@ Actor* rotateRight(Actor* y) {
     return x;
 }
 
+
+/**
+ * Performs a left rotation on a given node in the AVL tree.
+ * Used for balancing the tree when the right subtree is too tall.
+ */
 Actor* rotateLeft(Actor* x) {
     Actor* y = x->right;
     Actor* T2 = y->left;
@@ -47,6 +68,10 @@ Actor* rotateLeft(Actor* x) {
 }
 
 // load actors from csv ====================================================
+/**
+ * Loads actors from a CSV file and inserts them into the AVL tree.
+ * If an actor has an invalid format, an error is displayed.
+ */
 void loadActorsFromCSV(const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -80,7 +105,11 @@ void loadActorsFromCSV(const string& filename) {
 }
 
 
-// search for duplicate ID ALGORITHM ====================================================
+//====================================  Tam Shi Ying s10257952 - Search for duplicate ID ====================================
+/**
+ * Searches for a duplicate actor ID in the AVL tree.
+ * Returns true if the ID exists, otherwise false.
+ */
 bool searchDuplicateID(Actor* root, int id) {
     while (root != nullptr) {
         if (id == root->id) {
@@ -97,7 +126,11 @@ bool searchDuplicateID(Actor* root, int id) {
 }
 
 
-// add actor function =======================================================
+//====================================  Tam Shi Ying s10257952 - Add actor function ====================================
+/**
+ * Inserts a new actor into the AVL tree while maintaining balance.
+ * Performs necessary rotations if the tree becomes unbalanced.
+ */
 Actor* addActor(Actor* root, int id, const string& name, int yearOfBirth) {
     if (root == nullptr) {
         return new Actor(id, name, yearOfBirth);
@@ -216,8 +249,10 @@ void addActorWrapper() {
 
 
 
-// display actors ====================================================
-
+//====================================  Tam Shi Ying s10257952 - Display actors ====================================
+/**
+ * Displays all actors in ascending order based on their IDs.
+ */
 void displayActors(Actor* root) {
     if (root == nullptr) {  // Base case: if the tree is empty
         return;
@@ -274,6 +309,14 @@ void updateActorDetails() {
         cout << "Error: Actor with ID " << id << " not found.\n";
         return;
     }
+
+
+
+    // Tam Shi Ying S10257952 - Additional feature (Change history & undo change) ====
+    // Store the previous version before updating
+    pushChange("Actor", id, actor->name, actor->yearOfBirth);
+    // ===============================================================================
+
 
     string newName;
     int newYearOfBirth;

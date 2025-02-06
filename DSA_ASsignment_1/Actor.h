@@ -17,12 +17,46 @@ struct Actor {
     Actor(int actorId, string actorName, int birthYear);
 };
 
+//====================================  Tam Shi Ying s10257952 ====================================
+/**
+ * Searches for a duplicate actor ID in the AVL tree.
+ * Returns true if the ID exists, otherwise returns false.
+ */
 bool searchDuplicateID(Actor* root, int id);
+
+
+//====================================  Tam Shi Ying s10257952 ====================================
+/**
+ * Wrapper function to prompt the user to enter a new actor's details.
+ * Validates user input before adding the actor to the AVL tree.
+ */
 void addActorWrapper();
+
+
+//====================================  Tam Shi Ying s10257952 ====================================
+/**
+ * Inserts a new actor into the AVL tree while maintaining balance.
+ * If the tree becomes unbalanced, performs necessary rotations.
+ */
 Actor* addActor(Actor* root, int id, const string& name, int yearOfBirth);
+
+
+//====================================  Tam Shi Ying s10257952 ====================================
+/**
+ * Loads actor data from a CSV file and inserts them into the AVL tree.
+ * Ensures proper storage of actor details for later retrieval.
+ */
 void loadActorsFromCSV(const string& filename);
+
+
+//====================================  Tam Shi Ying s10257952 ====================================
+/**
+ * Displays all actors stored in the AVL tree using an in-order traversal.
+ * Ensures actors are listed in ascending order based on their ID.
+ */
 void displayActors(Actor* root);
-extern Actor* actorRoot; 
+
+extern Actor* actorRoot; // Global pointer to the root of the Actor AVL tree
 
 
 

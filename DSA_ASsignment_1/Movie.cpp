@@ -1,4 +1,5 @@
 #include "Movie.h"
+#include "ChangeLog.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -7,12 +8,9 @@ using namespace std;
 
 Movie* movieRoot = nullptr;
 
-Movie::Movie(int movieId, const string& movieTitle, int releaseYear)
-    : id(movieId), title(movieTitle), year(releaseYear),
-    rating(0.0), ratingCount(0),  // Initialize rating and rating count
-    left(nullptr), right(nullptr) {
-}
-
+Movie::Movie(int movieId, const string& movieTitle, const string& moviePlot, int releaseYear)
+    : id(movieId), title(movieTitle), plot(moviePlot), year(releaseYear),
+    rating(0.0), ratingCount(0), left(nullptr), right(nullptr) {}
 
 void loadMoviesFromCSV(const string& filename) {
     ifstream file(filename);
@@ -23,7 +21,7 @@ void loadMoviesFromCSV(const string& filename) {
 
     string line;
 
-    // skip header line
+    // Skip header line
     if (!getline(file, line)) {
         cerr << "Error: CSV file is empty or missing header." << endl;
         return;
@@ -31,48 +29,68 @@ void loadMoviesFromCSV(const string& filename) {
 
     while (getline(file, line)) {
         stringstream ss(line);
-        string idStr, title, yearStr;
+        string idStr, title, plot, yearStr;
 
-        if (getline(ss, idStr, ',') && getline(ss, title, ',') && getline(ss, yearStr)) {
-            try {
-                int id = stoi(idStr);
-                int year = stoi(yearStr);
+        // Read Movie ID
+        if (!getline(ss, idStr, ',')) continue;
 
-                Movie** current = &movieRoot;
-
-                while (*current != nullptr) {
-                    if (id < (*current)->id) {
-                        current = &(*current)->left;
-                    }
-                    else if (id > (*current)->id) {
-                        current = &(*current)->right;
-                    }
-                    else {
-                        cerr << "Error: Duplicate movie ID detected. Skipping movie: " << id << endl;
-                        break;
-                    }
-                }
-
-                if (*current == nullptr) {
-                    *current = new Movie(id, title, year);
-                }
-            }
-            catch (const invalid_argument& e) {
-                cerr << "Invalid data in CSV line: " << line << " (" << e.what() << ")" << endl;
-            }
-            catch (const out_of_range& e) {
-                cerr << "Out of range data in CSV line: " << line << " (" << e.what() << ")" << endl;
-            }
+        // Read Title (handle quotes correctly)
+        if (ss.peek() == '"') {
+            ss.get();
+            getline(ss, title, '"');
+            ss.get(); // Remove comma after closing quote
         }
         else {
-            cerr << "Malformed line in CSV: " << line << endl;
+            getline(ss, title, ',');
+        }
+
+        // Read Plot (handle quotes correctly)
+        if (ss.peek() == '"') {
+            ss.get();
+            getline(ss, plot, '"');
+            ss.get();
+        }
+        else {
+            getline(ss, plot, ',');
+        }
+
+        // Read Year
+        if (!getline(ss, yearStr)) continue;
+
+        try {
+            int id = stoi(idStr);
+            int year = stoi(yearStr);
+
+            Movie** current = &movieRoot;
+            while (*current != nullptr) {
+                if (id < (*current)->id) {
+                    current = &(*current)->left;
+                }
+                else if (id > (*current)->id) {
+                    current = &(*current)->right;
+                }
+                else {
+                    cerr << "Error: Duplicate movie ID detected. Skipping movie: " << id << endl;
+                    break;
+                }
+            }
+
+            if (*current == nullptr) {
+                *current = new Movie(id, title, plot, year);
+            }
+        }
+        catch (const invalid_argument& e) {
+            cerr << "Invalid data in CSV line: " << line << " (" << e.what() << ")" << endl;
+        }
+        catch (const out_of_range& e) {
+            cerr << "Out of range data in CSV line: " << line << " (" << e.what() << ")" << endl;
         }
     }
 
     file.close();
 }
 
-
+//====================================  Tam Shi Ying s10257952 - search movie by ID ====================================
 bool searchMovieByID(Movie* root, int id) {
     if (root == nullptr) {
         return false;
@@ -89,10 +107,13 @@ bool searchMovieByID(Movie* root, int id) {
     }
 }
 
+
+//====================================  Tam Shi Ying s10257952 - Display movies ====================================
 void displayMovies(Movie* root) {
     if (root != nullptr) {
         displayMovies(root->left);
         cout << "ID: " << root->id << ", Title: " << root->title
+            << ", Plot: " << root->plot
             << ", Year: " << root->year
             << ", Rating: " << (root->ratingCount > 0 ? to_string(root->rating) : "No ratings yet")
             << endl;
@@ -104,16 +125,16 @@ void displayMovies(Movie* root) {
 //==================================== Raeann Tai Yu Xuan S10262832J -  ====================================
 //this is the BSL tree ( binary search tree)
 
-Movie* addMovie(Movie* root, int id, const string& title, int year) {
+Movie* addMovie(Movie* root, int id, const string& title, const string& plot, int year) {
     if (root == nullptr) {
-        return new Movie(id, title, year);
+        return new Movie(id, title, plot, year);
     }
 
     if (id < root->id) {
-        root->left = addMovie(root->left, id, title, year);
+        root->left = addMovie(root->left, id, title, plot, year);
     }
     else if (id > root->id) {
-        root->right = addMovie(root->right, id, title, year);
+        root->right = addMovie(root->right, id, title, plot, year);
     }
     else {
         cout << "Error: Movie with ID " << id << " already exists.\n";
@@ -127,7 +148,7 @@ Movie* addMovie(Movie* root, int id, const string& title, int year) {
 //==================================== Raeann Tai Yu Xuan S10262832J -  ====================================
 void addMovieWrapper() {
     int id, year;
-    string title;
+    string title, plot;
 
     // Get Movie ID
     while (true) {
@@ -162,6 +183,9 @@ void addMovieWrapper() {
         cout << "Error: Title cannot be empty. Try again.\n";
     }
 
+    cout << "Enter movie plot: ";
+    getline(cin, plot);
+
     // Get Year of Release
     while (true) {
         cout << "Enter year of release: ";
@@ -179,7 +203,7 @@ void addMovieWrapper() {
     }
 
     // Add the Movie
-    movieRoot = addMovie(movieRoot, id, title, year);
+    movieRoot = addMovie(movieRoot, id, title, plot, year);
     cout << "Movie added successfully!\n";
 }
 
@@ -222,6 +246,11 @@ void updateMovieDetails() {
         cout << "Error: Movie with ID " << id << " not found.\n";
         return;
     }
+
+    // Tam Shi Ying S10257952 - Additional feature (Change history & undo change) ====
+// Store the previous version before updating
+    pushChange("Movie", id, movie->title, movie->year);
+    // ===============================================================================
 
     string newTitle;
     int newYear;
