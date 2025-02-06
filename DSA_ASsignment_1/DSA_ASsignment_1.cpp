@@ -104,9 +104,10 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
 
         case 2:
             cout << "\n========= Add New Movie =========\n";
+            cout << "To exit, enter 0 at any point.\n";
             addMovieWrapper();
             cout << "\n========= Updated Movie List =========\n";
-            displayMovies(movieRoot);
+           /* displayMovies(movieRoot);*/
             break;
 
         case 3:
@@ -126,7 +127,7 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
             cout << "\n========= Update Movie Details =========\n";
             updateMovieDetails();
             cout << "\n========= Updated Movie Details =========\n";
-            displayMovies(movieRoot);
+            /*displayMovies(movieRoot);*/
             break;
         case 6:
             cout << "\n========= Undo Last Change =========\n";
