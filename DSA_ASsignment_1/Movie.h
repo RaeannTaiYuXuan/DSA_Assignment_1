@@ -5,6 +5,7 @@ using namespace std;
 struct Movie {
 	int id;
 	string title;
+	string plot;
 	int year;
 	Movie* left;
 	Movie* right;
@@ -12,7 +13,7 @@ struct Movie {
 	float rating;
 	int ratingCount;
 
-	Movie(int movieId, const string& movieTitle, int releaseYear);
+	Movie(int movieId, const string& movieTitle,const string& moviePlot, int releaseYear);
 };
 
 
@@ -43,7 +44,8 @@ extern Movie* movieRoot; // Global pointer to the root of the Movie BST
 
 //==================================== Raeann Tai Yu Xuan S10262832J ====================================
 void addMovieWrapper();
-Movie* addMovie(Movie* root, int id, const string& title, int year);
+Movie* addMovie(Movie* root, int id, const string& title, const string& plot, int year);
+
 
 
 /*
