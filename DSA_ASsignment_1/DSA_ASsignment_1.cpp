@@ -5,7 +5,7 @@
 #include "ChangeLog.h"
 using namespace std;
 
-//====================================  Tam Shi Ying s10257952 - Additional feature (undoing change & change history) ====================================
+
 
 // Global Variables
 bool isRunning = true;
@@ -172,7 +172,7 @@ void displayUserMenu() {
 
         case 2:
             cout << "\n========= Display Movies Made Within the Past 3 Years =========\n";
-            currentYear = 1990;  // Adjust current year as needed
+            currentYear = 2025;  // Adjust current year as needed
             displayMoviesByRecentYears(movieRoot, currentYear);
             break;
 
