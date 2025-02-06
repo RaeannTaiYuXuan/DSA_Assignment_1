@@ -245,6 +245,14 @@ void addActorWrapper() {
 
     actorRoot = addActor(actorRoot, id, name, yearOfBirth);
     cout << "Actor added successfully!" << endl;
+
+
+    //NEWLY ADDED FOR DISPLAYING ONLY THE NEWLY ADDED ONE
+    cout << "\nActor added successfully!\n";
+    cout << "========= New Actor Details =========\n";
+    cout << "Actor ID: " << id
+        << ", Name: \"" << name
+        << "\", Year of Birth: " << yearOfBirth << endl;
 }
 
 
@@ -340,6 +348,13 @@ void updateActorDetails() {
     }
 
     cout << "Actor details updated successfully!\n";
+
+    //only displays the updated actor instead of the full list.
+    cout << "\nActor details updated successfully!\n";
+    cout << "========= Updated Actor Details =========\n";
+    cout << "Actor ID: " << actor->id
+        << ", Name: \"" << actor->name
+        << "\", Year of Birth: " << actor->yearOfBirth << endl;
 }
 
 //====================================  Raeann Tai Yu Xuan s10262832 -  Function to Display Actors by Age Range ====================================
@@ -374,16 +389,30 @@ void displayActorsByAgeRange(Actor* root, int minAge, int maxAge) {
 
 //====================================  Raeann Tai Yu Xuan s10262832 -  Wrapper Function to Get User Input ====================================
 
-/*
-Prompts user for an age range and displays matching actors.
-This function asks the user to enter the minimum (x) and maximum (y) age values,
-validates the input, and calls displayActorsByAgeRange() to show actors within
-the specified range in ascending order.
- */
+
+
+void countActorsByAgeRange(Actor* root, int minAge, int maxAge, int& count) {
+    if (root == nullptr) return;
+
+    // Traverse left subtree first (to maintain order)
+    countActorsByAgeRange(root->left, minAge, maxAge, count);
+
+    // Calculate actor's age
+    int actorAge = 2025 - root->yearOfBirth; // Assuming the current year is 2025
+
+    // Check if actor falls within the age range
+    if (actorAge >= minAge && actorAge <= maxAge) {
+        count++;
+    }
+
+    // Traverse right subtree
+    countActorsByAgeRange(root->right, minAge, maxAge, count);
+}
 
 void displayActorsByAgeRangeWrapper() {
     int minAge, maxAge;
 
+    // Prompt user for age range
     cout << "Enter minimum age (x): ";
     cin >> minAge;
 
@@ -395,9 +424,27 @@ void displayActorsByAgeRangeWrapper() {
         return;
     }
 
-    cout << "\n===== Actors Aged Between " << minAge << " and " << maxAge << " =====\n";
-    displayActorsByAgeRange(actorRoot, minAge, maxAge);
+    int count = 0;
+
+    // Count the number of actors within the age range
+    countActorsByAgeRange(actorRoot, minAge, maxAge, count);
+
+    cout << "\nTotal number of actors aged between " << minAge << " and " << maxAge << ": " << count << endl;
+
+    // Prompt user if they want to see the details
+    char choice;
+    cout << "Would you like to see the details? (Y/N): ";
+    cin >> choice;
+
+    if (choice == 'Y' || choice == 'y') {
+        cout << "\n===== Actors Aged Between " << minAge << " and " << maxAge << " =====\n";
+        displayActorsByAgeRange(actorRoot, minAge, maxAge);
+    }
+    else {
+        cout << "Returning to menu...\n";
+    }
 }
+
 
 
 //========== Raeann Tai Yu Xuan S10262832J - advance (ratings) ============
