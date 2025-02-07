@@ -192,14 +192,14 @@ void displayUserMenu() {
             break;
 
         case 6:
-            cout << "\n========= Rated Actor =========\n";
-            displayActors(actorRoot);
+            cout << "\n========= Rating Actors =========\n";
+            /*displayActors(actorRoot);*/
             cout << "\n";
             rateActor(actorRoot);
             break;
         case 7:
-            cout << "\n========= Rated Movie =========\n";
-            displayMovies(movieRoot);
+            cout << "\n========= Rating Movies =========\n";
+            /*displayMovies(movieRoot);*/
             cout << "\n";
             rateMovie(movieRoot);
             break;
