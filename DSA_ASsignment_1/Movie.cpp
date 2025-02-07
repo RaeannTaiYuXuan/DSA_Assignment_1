@@ -1,4 +1,4 @@
-#include "Movie.h"
+﻿#include "Movie.h"
 #include "ChangeLog.h"
 #include <iostream>
 #include <fstream>
@@ -110,16 +110,22 @@ bool searchMovieByID(Movie* root, int id) {
 
 //====================================  Tam Shi Ying s10257952 - Display movies ====================================
 void displayMovies(Movie* root) {
-    if (root != nullptr) {
-        displayMovies(root->left);
-        cout << "ID: " << root->id << ", Title: " << root->title
-            << ", Plot: " << root->plot
-            << ", Year: " << root->year
-            << ", Rating: " << (root->ratingCount > 0 ? to_string(root->rating) : "No ratings yet")
-            << endl;
-        displayMovies(root->right);
-    }
+    if (root == nullptr) return;
+
+    // In-order traversal (left → root → right)
+    displayMovies(root->left);
+
+    // Display movie details in a clean list format
+    cout << "ID: " << root->id
+        << ",  Title: " << root->title
+        << ",  Plot: " << root->plot
+        << ",  Year: " << root->year << "\n";
+
+    // Continue traversal
+    displayMovies(root->right);
 }
+
+
 
 
 //==================================== Raeann Tai Yu Xuan S10262832J -  ====================================
@@ -152,7 +158,7 @@ void addMovieWrapper() {
 
     // Get Movie ID
     while (true) {
-        cout << "Enter movie ID (or 0 to cancel): ";
+        cout << "Enter movie ID: ";
         if (!(cin >> id)) {
             cout << "Invalid input, try again.\n";
             cin.clear();
