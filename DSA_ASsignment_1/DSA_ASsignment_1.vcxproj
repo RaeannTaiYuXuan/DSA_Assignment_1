@@ -133,6 +133,7 @@
     <ClCompile Include="Cast.cpp" />
     <ClCompile Include="ChangeLog.cpp" />
     <ClCompile Include="DSA_ASsignment_1.cpp" />
+    <ClCompile Include="Levenshtein.cpp" />
     <ClCompile Include="Movie.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +141,7 @@
     <ClInclude Include="ActorsKnownHashTable.h" />
     <ClInclude Include="Cast.h" />
     <ClInclude Include="ChangeLog.h" />
+    <ClInclude Include="Levenshtein.h" />
     <ClInclude Include="Movie.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

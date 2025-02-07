@@ -13,6 +13,8 @@ struct Movie {
 	float rating;
 	int ratingCount;
 
+
+
 	Movie(int movieId, const string& movieTitle,const string& moviePlot, int releaseYear);
 };
 

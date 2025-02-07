@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "Levenshtein.h" // Include the header only
+
 using namespace std;
 
 Actor* actorRoot = nullptr;
@@ -457,59 +459,126 @@ void displayActorsByAgeRangeWrapper() {
 Allows a user to rate an actor.
 Prompts for actor ID and rating, then updates the average rating.
  */
+
+
+
+// Find top 3 similar actors based on name similarity
+void findSimilarActors(Actor* root, const Actor* targetActor, Actor* recommendations[3], int distances[3]) {
+    if (root == nullptr) return;
+
+    // Ignore the target actor itself
+    if (root->id != targetActor->id) {
+        int distance = levenshteinDistance(targetActor->name, root->name);
+
+        // Insert into the top 3 recommendations if it's a better match
+        for (int i = 0; i < 3; i++) {
+            if (distance < distances[i]) {
+                // Shift lower-ranked actors down
+                for (int j = 2; j > i; j--) {
+                    distances[j] = distances[j - 1];
+                    recommendations[j] = recommendations[j - 1];
+                }
+                // Insert new recommendation
+                distances[i] = distance;
+                recommendations[i] = root;
+                break;
+            }
+        }
+    }
+
+    // Recursive traversal (in-order to ensure sorted traversal)
+    findSimilarActors(root->left, targetActor, recommendations, distances);
+    findSimilarActors(root->right, targetActor, recommendations, distances);
+}
+
+
+// Rate an actor and show recommendations based on name similarity
 void rateActor(Actor* root) {
-    if (root == nullptr) {  // Check if the tree is empty
+    if (root == nullptr) {
         cout << "Error: No actors available to rate.\n";
         return;
     }
 
+    char showList;
+    cout << "Would you like to see the full list of actors before rating? (Y/N): ";
+    cin >> showList;
+
+    if (showList == 'Y' || showList == 'y') {
+        cout << "\n========= List of Actors =========\n";
+        displayActors(root);
+        cout << "==================================\n";
+    }
+
     int actorID;
     cout << "Enter Actor ID to rate: ";
-    cin >> actorID;
+    if (!(cin >> actorID)) {
+        cout << "Invalid input. Please enter a numeric Actor ID.\n";
+        cin.clear();
+        cin.ignore(1000, '\n');
+        return;
+    }
 
-    // Search for the actor by ID safely
     Actor* actor = searchActorByID(root, actorID);
     if (actor == nullptr) {
         cout << "Error: Actor with ID " << actorID << " not found.\n";
         return;
     }
 
-    // Get rating input
     float rating;
-    cout << "Enter your rating for " << actor->name << " (0 - 5): ";
-    cin >> rating;
+    while (true) {
+        cout << "Enter your rating for \"" << actor->name << "\" (0 - 5): ";
+        if (!(cin >> rating)) {
+            cout << "Invalid input. Please enter a number between 0 and 5.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
 
-    // Validate rating
-    if (rating < 0.0 || rating > 5.0) {
-        cout << "Invalid rating! Please enter a value between 0 and 5.\n";
-        return;
+        if (rating < 0.0 || rating > 5.0) {
+            cout << "Invalid rating! Please enter a value between 0 and 5.\n";
+        }
+        else {
+            break;
+        }
     }
 
     // Update average rating
     actor->rating = ((actor->rating * actor->ratingCount) + rating) / (actor->ratingCount + 1);
     actor->ratingCount++;
 
-    // Confirm rating submission
-    cout << "Rating submitted successfully for " << actor->name << "!\n";
+    cout << "Rating submitted successfully for \"" << actor->name << "\"!\n";
 
-    // Display the rated actor's updated information
+    // Display updated actor details
     cout << "\n========= Rated Actor Details =========" << endl;
-    cout << "ID:" << actor->id
+    cout << "ID: " << actor->id
         << "\nName: " << actor->name
         << "\nYear of Birth: " << actor->yearOfBirth
         << "\nRating: ";
 
-    // Display stars based on average rating
     int fullStars = static_cast<int>(actor->rating);
-    for (int i = 0; i < fullStars; ++i) {
-        cout << "*";
-    }
-    for (int i = fullStars; i < 5; ++i) {
-        cout << ".";
-    }
+    fullStars = std::min(fullStars, 5);
 
+    for (int i = 0; i < fullStars; ++i) cout << "*";
+    for (int i = fullStars; i < 5; ++i) cout << ".";
 
     cout << " (" << actor->rating << "/5 from " << actor->ratingCount << " ratings)" << endl;
+
+    // Find top 3 similar actors based on name similarity
+    Actor* recommendations[3] = { nullptr, nullptr, nullptr };
+    int distances[3] = { numeric_limits<int>::max(), numeric_limits<int>::max(), numeric_limits<int>::max() };
+
+    findSimilarActors(root, actor, recommendations, distances);
+
+    // Display recommendations
+    cout << "\n========= Recommended Actors Based on Similar Names =========\n";
+    for (int i = 0; i < 3; i++) {
+        if (recommendations[i] != nullptr) {
+            cout << i + 1 << ". " << recommendations[i]->name
+                << " (Year of Birth: " << recommendations[i]->yearOfBirth
+                << ", Similarity Score: " << distances[i] << ")\n";
+        }
+    }
+    cout << "========================================================\n";
 }
 
 

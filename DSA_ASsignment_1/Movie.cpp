@@ -1,4 +1,5 @@
 ﻿#include "Movie.h"
+#include "Levenshtein.h"
 #include "ChangeLog.h"
 #include <iostream>
 #include <fstream>
@@ -393,18 +394,62 @@ void displayMoviesByRecentYears(Movie* root, int currentYear) {
 Allows a user to rate a movie.
 Prompts for movie ID and rating, then updates the average rating.
  */
+
+
+// Function to compute Levenshtein Distance (Edit Distance)
+
+// Find top 3 similar movies based on plot similarity
+void findSimilarMovies(Movie* root, const Movie* targetMovie, Movie* recommendations[3], int distances[3]) {
+    if (root == nullptr) return;
+
+    // Ignore the target movie itself
+    if (root->id != targetMovie->id) {
+        int distance = levenshteinDistance(targetMovie->plot, root->plot);
+
+        // Insert into the top 3 recommendations if it's a better match
+        for (int i = 0; i < 3; i++) {
+            if (distance < distances[i]) {
+                // Shift lower-ranked movies down
+                for (int j = 2; j > i; j--) {
+                    distances[j] = distances[j - 1];
+                    recommendations[j] = recommendations[j - 1];
+                }
+                // Insert new recommendation
+                distances[i] = distance;
+                recommendations[i] = root;
+                break;
+            }
+        }
+    }
+
+    // Recursive traversal (in-order to ensure sorted traversal)
+    findSimilarMovies(root->left, targetMovie, recommendations, distances);
+    findSimilarMovies(root->right, targetMovie, recommendations, distances);
+}
+
+// Rate a movie and show recommendations based on plot similarity
 void rateMovie(Movie* root) {
     if (root == nullptr) {
         cout << "Error: No movies available to rate.\n";
         return;
     }
 
+    char showList;
+    cout << "Would you like to see the full list of movies before rating? (Y/N): ";
+    cin >> showList;
+
+    if (showList == 'Y' || showList == 'y') {
+        cout << "\n========= List of Movies =========\n";
+        displayMovies(root);
+        cout << "==================================\n";
+    }
+
     int movieID;
     cout << "Enter Movie ID to rate: ";
     if (!(cin >> movieID)) {
         cout << "Invalid input. Please enter a numeric Movie ID.\n";
-        cin.clear();               // Clear error flag
-        cin.ignore(1000, '\n');    // Discard invalid input
+        cin.clear();
+        cin.ignore(1000, '\n');
         return;
     }
 
@@ -417,19 +462,18 @@ void rateMovie(Movie* root) {
     float rating;
     while (true) {
         cout << "Enter your rating for \"" << movie->title << "\" (0 - 5): ";
-
         if (!(cin >> rating)) {
             cout << "Invalid input. Please enter a number between 0 and 5.\n";
-            cin.clear();               // Clear error flag
-            cin.ignore(1000, '\n');    // Discard invalid input
-            continue;                  // Prompt again
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
         }
 
         if (rating < 0.0 || rating > 5.0) {
             cout << "Invalid rating! Please enter a value between 0 and 5.\n";
         }
         else {
-            break;  // Valid rating, exit loop
+            break;
         }
     }
 
@@ -447,18 +491,26 @@ void rateMovie(Movie* root) {
         << "\nRating: ";
 
     int fullStars = static_cast<int>(movie->rating);
-    fullStars = std::min(fullStars, 5);  // Cap the stars at 5
+    fullStars = std::min(fullStars, 5);
 
-    for (int i = 0; i < fullStars; ++i) {
-        cout << "*";
-    }
-    for (int i = fullStars; i < 5; ++i) {
-        cout << ".";
-    }
-
+    for (int i = 0; i < fullStars; ++i) cout << "*";
+    for (int i = fullStars; i < 5; ++i) cout << ".";
 
     cout << " (" << movie->rating << "/5 from " << movie->ratingCount << " ratings)" << endl;
+
+    // Find top 3 similar movies based on plot similarity
+    Movie* recommendations[3] = { nullptr, nullptr, nullptr };
+    int distances[3] = { numeric_limits<int>::max(), numeric_limits<int>::max(), numeric_limits<int>::max() };
+
+    findSimilarMovies(root, movie, recommendations, distances);
+
+    // Display recommendations
+    cout << "\n========= Recommended Movies Based on Similar Plot =========\n";
+    for (int i = 0; i < 3; i++) {
+        if (recommendations[i] != nullptr) {
+            cout << i + 1 << ". " << recommendations[i]->title << " (Year: " << recommendations[i]->year
+                << ", Similarity Score: " << distances[i] << ")\n";
+        }
+    }
+    cout << "========================================================\n";
 }
-
-
-
