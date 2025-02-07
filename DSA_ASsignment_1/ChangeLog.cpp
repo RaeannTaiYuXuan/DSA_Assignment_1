@@ -35,7 +35,7 @@ void undoLastChange() {
 
     cout << "Undoing last change...\n";
     cout << "Restoring " << lastChange->entityType << " ID " << lastChange->id << " to previous version:\n";
-    cout << "Name: " << lastChange->oldName << ", Year: " << lastChange->oldYear << endl;
+    cout << "Name: " << lastChange->oldName << ", Birth Year: " << lastChange->oldYear << endl;
 
     // Restore the previous version in the actual database (Actor or Movie)
     if (lastChange->entityType == "Actor") {
@@ -72,6 +72,22 @@ string getCurrentName(const string& entityType, int id) {
 }
 
 /**
+ * Retrieves the current year (Birth Year for Actor, Release Year for Movie) by ID.
+ */
+int getCurrentYear(const string& entityType, int id) {
+    if (entityType == "Actor") {
+        Actor* actor = searchActorByID(actorRoot, id);
+        return actor ? actor->yearOfBirth : -1;  // -1 if not found
+    }
+    else if (entityType == "Movie") {
+        Movie* movie = searchMovieByIDNode(movieRoot, id);
+        return movie ? movie->year : -1;  // -1 if not found
+    }
+    return -1;  // Default case if entity type is invalid
+}
+
+
+/**
  * Displays the change history log.
  */
 void displayChangeHistory() {
@@ -83,12 +99,17 @@ void displayChangeHistory() {
 
     cout << "\n========= Change History =========\n";
     while (current) {
+        // Get the current name of the entity (Actor/Movie)
         string currentName = getCurrentName(current->entityType, current->id);
+
+        // Get the current year (either birth year for actors or release year for movies)
+        int currentYear = getCurrentYear(current->entityType, current->id);
 
         cout << current->entityType << " ID " << current->id << ":\n";
         cout << "  - Previous Name: " << current->oldName << "\n";
         cout << "  - Current Name: " << currentName << "\n";
         cout << "  - Previous Year: " << current->oldYear << "\n";
+        cout << "  - Current Year: " << currentYear << "\n\n";  
 
         current = current->next;
     }

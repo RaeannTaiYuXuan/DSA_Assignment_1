@@ -168,15 +168,31 @@ void displayCasts() {
  */
 void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
     int actorId, movieId;
+    char displayChoice;
+    cout << "\nEnter 0 to exit at any point" << endl;
 
-    cout << "\n========= Actor List =========" << endl;
-    displayActors(actorRoot);
+    // Ask if user wants to display the actor list
+    cout << "Would you like to see the actor list? (Y/N): ";
+    cin >> displayChoice;
+    cin.ignore();  // Clear newline from buffer
 
-    cout << "\n========= Movie List =========" << endl;
-    displayMovies(movieRoot);
+    if (displayChoice == 'Y' || displayChoice == 'y') {
+        cout << "\n========= Actor List =========" << endl;
+        displayActors(actorRoot);
+    }
 
+    // Ask if user wants to display the movie list
+    cout << "Would you like to see the movie list? (Y/N): ";
+    cin >> displayChoice;
+    cin.ignore();  // Clear newline from buffer
+
+    if (displayChoice == 'Y' || displayChoice == 'y') {
+        cout << "\n========= Movie List =========" << endl;
+        displayMovies(movieRoot);
+    }
+
+    // Actor ID input
     while (true) {
-        cout << "\nEnter 0 to exit at any point" << endl;
         cout << "Enter actor ID: ";
         cin >> actorId;
         if (actorId == 0) {
@@ -188,10 +204,11 @@ void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
             cout << "Error: Actor with ID " << actorId << " not found. Please try again." << endl;
         }
         else {
-            break; 
+            break;
         }
     }
 
+    // Movie ID input
     while (true) {
         cout << "Enter movie ID: ";
         cin >> movieId;
@@ -204,14 +221,29 @@ void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
             cout << "Error: Movie with ID " << movieId << " not found. Please try again." << endl;
         }
         else {
-            break; 
+            break;
         }
     }
 
+    // Add actor to movie
     if (addCastSorted(castHead, actorId, movieId)) {
-        cout << "Actor successfully added to the movie!" << endl;
+        // Retrieve actor name
+        Actor* actor = searchActorByID(actorRoot, actorId);
+        string actorName = (actor != nullptr) ? actor->name : "Unknown Actor";
+
+        // Retrieve movie title
+        Movie* movie = searchMovieByIDNode(movieRoot, movieId);
+        string movieTitle = (movie != nullptr) ? movie->title : "Unknown Movie";
+
+        cout << "\nActor successfully added to the movie!" << endl;
+        cout << "Actor ID:   " << actorId << "\n";
+        cout << "Actor Name: " << actorName << "\n";
+        cout << "Movie ID:   " << movieId << "\n";
+        cout << "Movie Name: " << movieTitle << "\n";
+        cout << "===========================" << endl;
     }
 }
+
 
 
 //====================================  Tam Shi Ying s10257952 - Display movies by actor ====================================
@@ -221,9 +253,34 @@ void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
  */
 void displayMoviesByActor(Cast* castHead, Movie* movieRoot, Actor* actorRoot) {
     int actorId;
+    char displayChoice;
+
+    // Ask if user wants to display actors who actually acted in movies
+    cout << "Enter 0 at any point to exit" << endl;
+    cout << "Would you like to see actors who have acted in movies? (Y/N): ";
+    cin >> displayChoice;
+    cin.ignore();
+
+    if (displayChoice == 'Y' || displayChoice == 'y') {
+        cout << "\n========= Actors Who Have Acted in Movies =========" << endl;
+
+        Cast* castTemp = castHead;
+        int lastActorId = -1;
+
+        while (castTemp != nullptr) {
+            if (castTemp->person_id != lastActorId) { // Prevent duplicate display
+                Actor* actor = searchActorByID(actorRoot, castTemp->person_id);
+                if (actor) {
+                    cout << "Actor ID: " << actor->id << ", Name: " << actor->name << endl;
+                    lastActorId = castTemp->person_id;
+                }
+            }
+            castTemp = castTemp->next;
+        }
+    }
 
     while (true) {
-        cout << "\nEnter Actor ID (or 0 to exit): ";
+        cout << "Enter Actor ID: ";
         cin >> actorId;
 
         if (actorId == 0) {
@@ -232,72 +289,31 @@ void displayMoviesByActor(Cast* castHead, Movie* movieRoot, Actor* actorRoot) {
         }
 
         if (searchDuplicateID(actorRoot, actorId)) {
-            break; 
+            break;
         }
 
-        cout << "Error: Actor ID " << actorId << " does not exist in the database! Please try again." << endl;
+        cout << "Error: Actor ID " << actorId << " does not exist! Please try again." << endl;
     }
 
-    struct SortedMovieNode {
-        string title;
-        int id;
-        int year;
-        SortedMovieNode* next;
-
-        SortedMovieNode(const string& title, int id, int year)
-            : title(title), id(id), year(year), next(nullptr) {}
-    };
-
-    SortedMovieNode* sortedMoviesHead = nullptr;
-
+    int movieCount = 0;
     Cast* current = castHead;
-    while (current != nullptr) {
-        if (current->person_id == actorId) {
-            Movie* movie = movieRoot;
-            while (movie != nullptr) {
-                if (current->movie_id == movie->id) {
-                    SortedMovieNode* newNode = new SortedMovieNode(movie->title, movie->id, movie->year);
 
-                    if (!sortedMoviesHead || newNode->title < sortedMoviesHead->title) {
-                        newNode->next = sortedMoviesHead;
-                        sortedMoviesHead = newNode;
-                    }
-                    else {
-                        SortedMovieNode* temp = sortedMoviesHead;
-                        while (temp->next && temp->next->title < newNode->title) {
-                            temp = temp->next;
-                        }
-                        newNode->next = temp->next;
-                        temp->next = newNode;
-                    }
-                    break;
-                }
-                else if (current->movie_id < movie->id) {
-                    movie = movie->left; 
-                }
-                else {
-                    movie = movie->right; 
-                }
+    cout << "\nMovies for Actor ID " << actorId << ":\n";
+    int lastMovieId = -1;
+
+    while (current != nullptr) {
+        if (current->person_id == actorId && current->movie_id != lastMovieId) {
+            Movie* movie = searchMovieByIDNode(movieRoot, current->movie_id);
+            if (movie) {
+                cout << "Movie ID: " << movie->id << ", Title: " << movie->title << ", Year: " << movie->year << endl;
+                movieCount++;
+                lastMovieId = current->movie_id;
             }
         }
         current = current->next;
     }
 
-    if (sortedMoviesHead) {
-        SortedMovieNode* temp = sortedMoviesHead;
-        cout << "\nMovies for Actor ID " << actorId << ":\n";
-        while (temp) {
-            cout << "Movie ID: " << temp->id << ", Title: " << temp->title << ", Year: " << temp->year << endl;
-            temp = temp->next;
-        }
-
-        while (sortedMoviesHead) {
-            SortedMovieNode* toDelete = sortedMoviesHead;
-            sortedMoviesHead = sortedMoviesHead->next;
-            delete toDelete;
-        }
-    }
-    else {
+    if (movieCount == 0) {
         cout << "No movies found for Actor ID: " << actorId << endl;
     }
 }
@@ -308,11 +324,36 @@ void displayMoviesByActor(Cast* castHead, Movie* movieRoot, Actor* actorRoot) {
 /**
  * Displays all actors who starred in a given movie.
  */
-void displayActorsByMovie(Cast* castHead, Actor* actorRoot) {
+void displayActorsByMovie(Cast* castHead, Movie* movieRoot, Actor* actorRoot) {
     int movieId;
+    char displayChoice;
+    cout << "Enter 0 at any point to exit" << endl;
+
+    // Ask if user wants to display movies that actually have actors
+    cout << "Would you like to see movies that have actors? (Y/N): ";
+    cin >> displayChoice;
+    cin.ignore();
+
+    if (displayChoice == 'Y' || displayChoice == 'y') {
+        cout << "\n========= Movies That Have Actors =========" << endl;
+
+        Cast* castTemp = castHead;
+        int lastMovieId = -1;
+
+        while (castTemp != nullptr) {
+            if (castTemp->movie_id != lastMovieId) { // Prevent duplicate display
+                Movie* movie = searchMovieByIDNode(movieRoot, castTemp->movie_id);
+                if (movie) {
+                    cout << "Movie ID: " << movie->id << ", Title: " << movie->title << endl;
+                    lastMovieId = castTemp->movie_id;
+                }
+            }
+            castTemp = castTemp->next;
+        }
+    }
 
     while (true) {
-        cout << "\nEnter Movie ID (or 0 to exit): ";
+        cout << "Enter Movie ID: ";
         cin >> movieId;
 
         if (movieId == 0) {
@@ -332,77 +373,37 @@ void displayActorsByMovie(Cast* castHead, Actor* actorRoot) {
         }
 
         if (!movieExists) {
-            cout << "Error: Movie ID " << movieId << " does not exist in the database! Please try again." << endl;
+            cout << "Error: Movie ID " << movieId << " does not exist! Please try again." << endl;
         }
         else {
-            break; 
+            break;
         }
     }
 
-    struct SortedActorNode {
-        string name;
-        int id;
-        int yearOfBirth;
-        SortedActorNode* next;
-
-        SortedActorNode(const string& name, int id, int yearOfBirth)
-            : name(name), id(id), yearOfBirth(yearOfBirth), next(nullptr) {}
-    };
-
-    SortedActorNode* sortedActorsHead = nullptr;
-
+    int actorCount = 0;
     Cast* current = castHead;
-    while (current != nullptr) {
-        if (current->movie_id == movieId) {
-            Actor* actor = actorRoot;
-            while (actor != nullptr) {
-                if (current->person_id == actor->id) {
-                    SortedActorNode* newNode = new SortedActorNode(actor->name, actor->id, actor->yearOfBirth);
 
-                    if (!sortedActorsHead || newNode->name < sortedActorsHead->name) {
-                        newNode->next = sortedActorsHead;
-                        sortedActorsHead = newNode;
-                    }
-                    else {
-                        SortedActorNode* temp = sortedActorsHead;
-                        while (temp->next && temp->next->name < newNode->name) {
-                            temp = temp->next;
-                        }
-                        newNode->next = temp->next;
-                        temp->next = newNode;
-                    }
-                    break; 
-                }
-                else if (current->person_id < actor->id) {
-                    actor = actor->left; 
-                }
-                else {
-                    actor = actor->right; 
-                }
+    cout << "\nActors for Movie ID " << movieId << ":\n";
+    int lastActorId = -1;
+
+    while (current != nullptr) {
+        if (current->movie_id == movieId && current->person_id != lastActorId) {
+            Actor* actor = searchActorByID(actorRoot, current->person_id);
+            if (actor) {
+                cout << "Actor ID: " << actor->id << ", Name: " << actor->name << ", Year of Birth: " << actor->yearOfBirth << endl;
+                actorCount++;
+                lastActorId = current->person_id;
             }
         }
         current = current->next;
     }
 
-    if (sortedActorsHead) {
-        cout << "\nActors for Movie ID " << movieId << " in alphabetical order:\n";
-        SortedActorNode* temp = sortedActorsHead;
-        while (temp) {
-            cout << "Actor ID: " << temp->id << ", Name: " << temp->name
-                << ", Year of Birth: " << temp->yearOfBirth << endl;
-            temp = temp->next;
-        }
-
-        while (sortedActorsHead) {
-            SortedActorNode* toDelete = sortedActorsHead;
-            sortedActorsHead = sortedActorsHead->next;
-            delete toDelete;
-        }
-    }
-    else {
+    if (actorCount == 0) {
         cout << "No actors found for Movie ID: " << movieId << endl;
     }
 }
+
+
 
 
 //====================================  Tam Shi Ying s10257952 - Display known actors ====================================
@@ -412,9 +413,21 @@ void displayActorsByMovie(Cast* castHead, Actor* actorRoot) {
  */
 void displayKnownActors(Cast* castHead, Actor* actorRoot) {
     int actorId;
+    char displayChoice;
+    cout << "Enter 0 at any point to exit" << endl;
+
+    // Ask if user wants to display the actor list
+    cout << "Would you like to see the actor list? (Y/N): ";
+    cin >> displayChoice;
+    cin.ignore();
+
+    if (displayChoice == 'Y' || displayChoice == 'y') {
+        cout << "\n========= Actor List =========" << endl;
+        displayActors(actorRoot);
+    }
 
     while (true) {
-        cout << "Enter Actor ID (or 0 to exit): ";
+        cout << "Enter Actor ID: ";
         cin >> actorId;
 
         if (actorId == 0) {
@@ -426,13 +439,16 @@ void displayKnownActors(Cast* castHead, Actor* actorRoot) {
             cout << "Error: Actor ID " << actorId << " does not exist in the database! Please try again." << endl;
         }
         else {
-            break; 
+            break;
         }
     }
 
     ActorsKnownHashTable knownActors;
     ActorsKnownHashTable extendedKnownActors;
+    int knownCount = 0;  // Count for directly known actors
+    int extendedCount = 0; // Count for extended known actors
 
+    // Find direct co-actors
     Cast* current = castHead;
     while (current != nullptr) {
         if (current->person_id == actorId) {
@@ -441,7 +457,8 @@ void displayKnownActors(Cast* castHead, Actor* actorRoot) {
                 if (inner->movie_id == current->movie_id && inner->person_id != actorId) {
                     if (!knownActors.exists(inner->person_id)) {
                         knownActors.insert(inner->person_id);
-                        cout << "Actor ID: " << inner->person_id << " (Known)" << endl;
+                        knownCount++;  // Increment known actor count
+                        cout << "Actor ID: " << inner->person_id << endl;
                     }
                 }
                 inner = inner->next;
@@ -450,6 +467,11 @@ void displayKnownActors(Cast* castHead, Actor* actorRoot) {
         current = current->next;
     }
 
+    if (knownCount == 0) {
+        cout << "No known actors found for Actor ID: " << actorId << endl;
+    }
+
+    // Find second-degree connections (actors who worked with known actors)
     current = castHead;
     while (current != nullptr) {
         if (knownActors.exists(current->person_id)) {
@@ -458,11 +480,16 @@ void displayKnownActors(Cast* castHead, Actor* actorRoot) {
                 if (inner->movie_id == current->movie_id && !knownActors.exists(inner->person_id) &&
                     !extendedKnownActors.exists(inner->person_id) && inner->person_id != actorId) {
                     extendedKnownActors.insert(inner->person_id);
-                    cout << "Actor ID: " << inner->person_id << " (Extended)" << endl;
+                    extendedCount++; // Increment extended actor count
+                    cout << "Extended Actor ID: " << inner->person_id << endl;
                 }
                 inner = inner->next;
             }
         }
         current = current->next;
+    }
+
+    if (extendedCount == 0) {
+        cout << "No extended known actors found for Actor ID: " << actorId << endl;
     }
 }

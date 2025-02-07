@@ -183,7 +183,7 @@ void addActorWrapper() {
     int yearOfBirth;
 
     while (true) {
-        cout << "Enter actor ID (or 0 to exit): ";
+        cout << "Enter actor ID: ";
 
         if (!(cin >> id)) {
             cout << "Error: Invalid input. Please enter a numeric ID.\n";
@@ -244,12 +244,12 @@ void addActorWrapper() {
     }
 
     actorRoot = addActor(actorRoot, id, name, yearOfBirth);
-    cout << "Actor added successfully!" << endl;
+
 
 
     //NEWLY ADDED FOR DISPLAYING ONLY THE NEWLY ADDED ONE
-    cout << "\nActor added successfully!\n";
-    cout << "========= New Actor Details =========\n";
+    cout << "\nActor added successfully!\n" << endl;
+    cout << "\n========= New Actor Details =========\n";
     cout << "Actor ID: " << id
         << ", Name: \"" << name
         << "\", Year of Birth: " << yearOfBirth << endl;
@@ -262,17 +262,21 @@ void addActorWrapper() {
  * Displays all actors in ascending order based on their IDs.
  */
 void displayActors(Actor* root) {
-    if (root == nullptr) {  // Base case: if the tree is empty
-        return;
-    }
+    if (root == nullptr) return;
 
+    // In-order traversal (left → root → right)
     displayActors(root->left);
-    cout << "ID: " << root->id << ", Name: " << root->name
-        << ", Year of Birth: " << root->yearOfBirth
-        << ", Rating: " << (root->ratingCount > 0 ? to_string(root->rating) : "No ratings yet")
-        << endl;
+
+    // Display actor details in a clean list format
+    cout << "ID: " << root->id
+        << ",  Name: " << root->name
+        << ",  Year of Birth: " << root->yearOfBirth
+        << ",  Age: " << (2025 - root->yearOfBirth) << "\n";
+
+    // Continue traversal
     displayActors(root->right);
 }
+
 
 
 
@@ -347,7 +351,6 @@ void updateActorDetails() {
         cout << "Invalid year! Keeping previous value.\n";
     }
 
-    cout << "Actor details updated successfully!\n";
 
     //only displays the updated actor instead of the full list.
     cout << "\nActor details updated successfully!\n";

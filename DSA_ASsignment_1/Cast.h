@@ -58,7 +58,8 @@ void displayMoviesByActor(Cast* castHead, Movie* movieRoot, Actor* actorRoot);
  * Displays all actors who have appeared in a given movie.
  * Uses the cast list to find and print the actors for the specified movie.
  */
-void displayActorsByMovie(Cast* castHead, Actor* actorRoot);
+void displayActorsByMovie(Cast* castHead, Movie* movieRoot, Actor* actorRoot);
+
 
 /**
  * Displays actors who have worked with a given actor.
@@ -84,5 +85,7 @@ void buildCastIndex(Cast* head);
 extern Cast* castHead;                      // Head of the cast linked list
 extern Cast* castIndex[MAX_CAST_SIZE];      // Indexed array for fast searching
 extern int castCount;                       // Count of cast entries in the index
+
+
 
 

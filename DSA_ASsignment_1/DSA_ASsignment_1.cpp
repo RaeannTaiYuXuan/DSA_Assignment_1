@@ -72,7 +72,7 @@ void displayMainMenu() {
     cout << "2 : User menu\n";
     cout << "0 : Exit\n";
     cout << "===========================================\n";
-    cout << "Enter your choice: ";
+
 }
 
 // Administrator Menu
@@ -113,7 +113,6 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
         case 3:
             cout << "\n========= Add Actor to a Movie =========\n";
             addActorToMovieWrapper(movieRoot, actorRoot);
-            displayCasts();
             break;
 
         case 4:
@@ -179,14 +178,12 @@ void displayUserMenu() {
 
         case 3:
             cout << "\n========= Display All Movies an Actor Starred In =========\n";
-            /*displayActors(actorRoot);*/
             displayMoviesByActor(castHead, movieRoot, actorRoot);
             break;
 
         case 4:
             cout << "\n========= Display All Actors in a Particular Movie =========\n";
-            displayMovies(movieRoot);
-            displayActorsByMovie(castHead, actorRoot);
+            displayActorsByMovie(castHead, movieRoot, actorRoot);
             break;
 
         case 5:
