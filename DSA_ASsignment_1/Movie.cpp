@@ -153,10 +153,10 @@ void addMovieWrapper() {
     // Get Movie ID
     while (true) {
         cout << "Enter movie ID (or 0 to cancel): ";
-        if (!(cin >> id)) {  // Check if input is valid
+        if (!(cin >> id)) {
             cout << "Invalid input, try again.\n";
-            cin.clear();                // Clear the error flag
-            cin.ignore(1000, '\n');     // Clear any invalid input
+            cin.clear();
+            cin.ignore(1000, '\n');
             continue;
         }
 
@@ -167,8 +167,9 @@ void addMovieWrapper() {
 
         if (searchMovieByID(movieRoot, id)) {
             cout << "Error: Movie with this ID already exists. Try again.\n";
-        } else {
-            cin.ignore(1000, '\n');  // Clear newline after valid numeric input
+        }
+        else {
+            cin.ignore(1000, '\n');
             break;
         }
     }
@@ -176,23 +177,30 @@ void addMovieWrapper() {
     // Get Movie Title
     while (true) {
         cout << "Enter movie title: ";
-        getline(cin, title);  // Read the entire line including spaces
-        if (!title.empty() && title.find_first_not_of(' ') != string::npos) { 
-            break;  // Title is valid if it's not just spaces
+        getline(cin, title);
+        if (!title.empty() && title.find_first_not_of(' ') != string::npos) {
+            break;
         }
         cout << "Error: Title cannot be empty. Try again.\n";
     }
 
-    cout << "Enter movie plot: ";
-    getline(cin, plot);
+    // Get Movie Plot
+    while (true) {
+        cout << "Enter movie plot: ";
+        getline(cin, plot);
+        if (!plot.empty() && plot.find_first_not_of(' ') != string::npos) {
+            break;
+        }
+        cout << "Error: Plot cannot be empty. Try again.\n";
+    }
 
     // Get Year of Release
     while (true) {
         cout << "Enter year of release: ";
-        if (!(cin >> year)) {  // Validate numeric input
+        if (!(cin >> year)) {
             cout << "Invalid input, try again.\n";
             cin.clear();
-            cin.ignore(1000, '\n');  // Clear any invalid input
+            cin.ignore(1000, '\n');
             continue;
         }
 
@@ -204,8 +212,16 @@ void addMovieWrapper() {
 
     // Add the Movie
     movieRoot = addMovie(movieRoot, id, title, plot, year);
-    cout << "Movie added successfully!\n";
+
+    // Show only the newly added movie
+    cout << "\nMovie added successfully!\n";
+    cout << "\n========= New Movie Details =========\n";
+    cout << "Movie ID: " << id
+        << ", Title: \"" << title
+        << "\", Plot: " << plot
+        << ", Year: " << year << endl;
 }
+
 
 
 //==================================== Raeann Tai Yu Xuan S10262832J - Search for a Movie by ID  ====================================
@@ -247,12 +263,10 @@ void updateMovieDetails() {
         return;
     }
 
-    // Tam Shi Ying S10257952 - Additional feature (Change history & undo change) ====
-// Store the previous version before updating
+    // Store the previous version before updating (for undo feature)
     pushChange("Movie", id, movie->title, movie->year);
-    // ===============================================================================
 
-    string newTitle;
+    string newTitle, newPlot;
     int newYear;
 
     cin.ignore();
@@ -265,6 +279,7 @@ void updateMovieDetails() {
 
     cout << "Enter new release year (or 0 to keep unchanged): ";
     cin >> newYear;
+    cin.ignore();
 
     if (newYear >= 1900 && newYear <= 2025) {
         movie->year = newYear;
@@ -273,10 +288,65 @@ void updateMovieDetails() {
         cout << "Invalid year! Keeping previous value.\n";
     }
 
-    cout << "Movie details updated successfully!\n";
+    cout << "Enter new plot (leave blank to keep unchanged): ";
+    getline(cin, newPlot);
+
+    if (!newPlot.empty()) {
+        movie->plot = newPlot;
+    }
+
+    cout << "\nMovie updated successfully!\n";
+    cout << "========= Updated Movie Details =========\n";
+    cout << "Movie ID: " << movie->id
+        << ", Title: \"" << movie->title
+        << "\", Year: " << movie->year
+        << ", Plot: " << movie->plot << endl;
 }
 
+
+
 //==================================== Raeann Tai Yu Xuan S10262832J - Function to Display Movies from the Last 3 Years ====================================
+
+// Structure for linked list node
+struct MovieNode {
+    Movie* movie;
+    MovieNode* next;
+};
+
+// Insert movie into sorted linked list (ascending order by year)
+void insertSorted(MovieNode*& head, Movie* movie) {
+    MovieNode* newNode = new MovieNode{ movie, nullptr };
+
+    // If list is empty or movie should be inserted at the head
+    if (!head || movie->year < head->movie->year) {
+        newNode->next = head;
+        head = newNode;
+        return;
+    }
+
+    // Find position to insert
+    MovieNode* current = head;
+    while (current->next && current->next->movie->year <= movie->year) {
+        current = current->next;
+    }
+
+    newNode->next = current->next;
+    current->next = newNode;
+}
+
+// Collect movies from BST that fall within the past 3 years
+void collectMovies(Movie* root, int currentYear, MovieNode*& head) {
+    if (!root) return;
+
+    collectMovies(root->left, currentYear, head);
+
+    if (root->year >= currentYear - 3 && root->year <= currentYear) {
+        insertSorted(head, root);  // Insert movie into sorted linked list
+    }
+
+    collectMovies(root->right, currentYear, head);
+}
+
 
 /*
 Displays movies released in the past 3 years in ascending order.
@@ -285,23 +355,28 @@ and filters movies that were released within the last 3 years.
 Pointer to the root of the BST.
 currentYear The current year to calculate the 3-year range.
  */
+ // Display movies in sorted order from the linked list
 void displayMoviesByRecentYears(Movie* root, int currentYear) {
-    if (root == nullptr) {
-        return;  // Base case: if the node is null, exit the function
+    MovieNode* head = nullptr;  // Head of linked list
+
+    // Collect and sort movies
+    collectMovies(root, currentYear, head);
+
+    // Display sorted movies
+    MovieNode* current = head;
+    while (current) {
+        cout << "Movie ID: " << current->movie->id
+            << ", Title: \"" << current->movie->title
+            << "\", Year: " << current->movie->year << endl;
+        current = current->next;
     }
 
-    // Traverse the left subtree (smaller years)
-    displayMoviesByRecentYears(root->left, currentYear);
-
-    // Check if the movie's year is within the last 3 years
-    if (root->year >= currentYear - 3 && root->year <= currentYear) {
-        cout << "Movie ID: " << root->id 
-             << ", Title: \"" << root->title 
-             << "\", Year: " << root->year << endl;
+    // Free allocated memory
+    while (head) {
+        MovieNode* temp = head;
+        head = head->next;
+        delete temp;
     }
-
-    // Traverse the right subtree (larger years)
-    displayMoviesByRecentYears(root->right, currentYear);
 }
 
 

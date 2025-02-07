@@ -98,15 +98,16 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
             cout << "\n========= Add New Actor =========\n";
             cout << "To exit, enter 0 at any point.\n";
             addActorWrapper();
-            cout << "\n========= Updated Actor List =========\n";
-            displayActors(actorRoot);
+            /*cout << "\n========= Updated Actor List =========\n";*/
+            /*displayActors(actorRoot);*/
             break;
 
         case 2:
             cout << "\n========= Add New Movie =========\n";
+            cout << "To exit, enter 0 at any point.\n";
             addMovieWrapper();
-            cout << "\n========= Updated Movie List =========\n";
-            displayMovies(movieRoot);
+            /*cout << "\n========= Updated Movie List =========\n";*/
+           /* displayMovies(movieRoot);*/
             break;
 
         case 3:
@@ -118,15 +119,15 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
         case 4:
             cout << "\n========= Update Actor Details =========\n";
             updateActorDetails();
-            cout << "\n========= Updated Actor Details =========\n";
-            displayActors(actorRoot);
+            /*cout << "\n========= Updated Actor Details =========\n";*/
+            /*displayActors(actorRoot);*/
             break;
 
         case 5:
             cout << "\n========= Update Movie Details =========\n";
             updateMovieDetails();
-            cout << "\n========= Updated Movie Details =========\n";
-            displayMovies(movieRoot);
+            /*cout << "\n========= Updated Movie Details =========\n";*/
+            /*displayMovies(movieRoot);*/
             break;
         case 6:
             cout << "\n========= Undo Last Change =========\n";
@@ -178,7 +179,7 @@ void displayUserMenu() {
 
         case 3:
             cout << "\n========= Display All Movies an Actor Starred In =========\n";
-            displayActors(actorRoot);
+            /*displayActors(actorRoot);*/
             displayMoviesByActor(castHead, movieRoot, actorRoot);
             break;
 
