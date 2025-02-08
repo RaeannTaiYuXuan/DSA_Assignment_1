@@ -66,7 +66,7 @@ void rateActor(Actor* root);
 
 
 //==================================== Raeann Tai Yu Xuan S10262832J - search for an actor by ID ====================================
-/**
+/*
  Searches for an actor in the AVL tree by ID.
  root Pointer to the root node of the AVL tree.
  id Unique ID of the actor to search.
@@ -76,7 +76,7 @@ Actor* searchActorByID(Actor* root, int id);
 
 
 //==================================== Raeann Tai Yu Xuan S10262832J - Update Actor Details ====================================
-/**
+/*
  Allows an administrator to update an actor's details.
  This function prompts for a new name and/or birth year.
  If invalid input is given, the old details are kept.
