@@ -1,6 +1,28 @@
 #include "Levenshtein.h"
 
-// Function to compute Levenshtein Distance (Edit Distance)
+//==================================== Raeann Tai Yu Xuan S10262832J - Function to determine two strings by counting max no of operation needed to transfer to another ====================================
+
+/*
+ * Computes the Levenshtein Distance (Edit Distance) between two strings.
+ *
+ * The Levenshtein Distance is a measure of the minimum number of operations
+ * (insertions, deletions, and substitutions) required to convert one string into another.
+ *
+ * The function uses dynamic programming with a 2D table (dp) where:
+ *   - dp[i][j] represents the edit distance between the first i characters of s1
+ *     and the first j characters of s2.
+ *   - If characters match, no operation is needed (dp[i][j] = dp[i-1][j-1]).
+ *   - Otherwise, the minimum of three possible operations is considered:
+ *     1. Substitution (dp[i-1][j-1])
+ *     2. Insertion (dp[i][j-1])
+ *     3. Deletion (dp[i-1][j])
+ *
+ * The algorithm has a time complexity of O(m * n), where:
+ *   - m is the length of s1
+ *   - n is the length of s2
+ */
+
+
 int levenshteinDistance(const string& s1, const string& s2) {
     int len1 = s1.size();
     int len2 = s2.size();

@@ -19,23 +19,23 @@ struct Movie {
 };
 
 
-/**
- * Loads movie data from a CSV file and inserts them into the BST.
- * Ensures proper storage of movie details for later retrieval.
+/*
+Loads movie data from a CSV file and inserts them into the BST.
+Ensures proper storage of movie details for later retrieval.
  */
 void loadMoviesFromCSV(const string& filename);
 
 //====================================  Tam Shi Ying s10257952 ====================================
-/**
- * Searches for a movie in the BST by its unique ID.
- * Returns true if the movie is found, otherwise returns false.
+/*
+Searches for a movie in the BST by its unique ID.
+Returns true if the movie is found, otherwise returns false.
  */
 bool searchMovieByID(Movie* root, int id);
 
 //====================================  Tam Shi Ying s10257952 ====================================
-/**
- * Displays all movies stored in the BST using an in-order traversal.
- * Ensures movies are listed in ascending order based on their ID.
+/*
+Displays all movies stored in the BST using an in-order traversal.
+Ensures movies are listed in ascending order based on their ID.
  */
 void displayMovies(Movie* root);
 
@@ -59,7 +59,7 @@ Movie* addMovie(Movie* root, int id, const string& title, const string& plot, in
 Movie* searchMovieByIDNode(Movie* root, int id);
 
 
-/**
+/*
  Allows an administrator to update a movie's details.
  This function prompts for a new title and/or release year.
  If invalid input is given, the old details are kept.
@@ -86,4 +86,3 @@ void displayMoviesByRecentYears(Movie* root, int currentYear);
 void rateMovie(Movie* root);
 void displayMovies(Movie* root); 
 
-//========================================================================================================
