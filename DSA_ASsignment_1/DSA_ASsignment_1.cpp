@@ -68,9 +68,9 @@ int main() {
 void displayMainMenu() {
 
     cout << "\n========= Movie Application Menu =========\n";
-    cout << "1 : Administrator menu\n";
-    cout << "2 : User menu\n";
-    cout << "0 : Exit\n";
+    cout << "[1]  Administrator menu\n";
+    cout << "[2]  User menu\n";
+    cout << "[0]  Exit\n";
     cout << "===========================================\n";
 
 }
@@ -81,17 +81,23 @@ void displayAdminMenu(Movie* movieRoot, Actor* actorRoot) {
 
     do {
         cout << "\n========= Administrator Menu =========\n";
-        cout << "1 : Add new actor\n";
-        cout << "2 : Add new movie\n";
-        cout << "3 : Add an actor to a movie\n";
-        cout << "4 : Update actor details\n";
-        cout << "5 : Update movie details\n";
-        cout << "6 : Undo last change\n"; 
-        cout << "7 : View change history\n"; 
-        cout << "0 : Return to main menu\n";
+        cout << "[1]  Add new actor\n";
+        cout << "[2]  Add new movie\n";
+        cout << "[3]  Add an actor to a movie\n";
+        cout << "[4]  Update actor details\n";
+        cout << "[5]  Update movie details\n";
+        cout << "[6]  Undo last change\n"; 
+        cout << "[7]  View change history\n"; 
+        cout << "[0]  Return to main menu\n";
         cout << "=======================================\n";
         cout << "Enter your choice: ";
-        cin >> adminChoice;
+
+        while (!(cin >> adminChoice)) {
+            cout << "\nInvalid input. Please enter a valid number.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Enter your choice: ";
+        }
 
         switch (adminChoice) {
         case 1:
@@ -152,17 +158,23 @@ void displayUserMenu() {
 
     do {
         cout << "\n========= User Menu =========\n";
-        cout << "1 : Display actors between a certain age\n";
-        cout << "2 : Display movies made within the past 3 years\n";
-        cout << "3 : Display all movies an actor starred in\n";
-        cout << "4 : Display all the actors in a particular movie\n";
-        cout << "5 : Display a list of all actors that a particular actor knows\n";
-        cout << "6 : Rate an actor\n";
-        cout << "7 : Rate a movie\n";
-        cout << "0 : Return to main menu\n";
+        cout << "[1]  Display actors between a certain age\n";
+        cout << "[2]  Display movies made within the past 3 years\n";
+        cout << "[3]  Display all movies an actor starred in\n";
+        cout << "[4]  Display all the actors in a particular movie\n";
+        cout << "[5]  Display a list of all actors that a particular actor knows\n";
+        cout << "[6]  Rate an actor\n";
+        cout << "[7]  Rate a movie\n";
+        cout << "[0]  Return to main menu\n";
         cout << "==============================\n";
         cout << "Enter your choice: ";
-        cin >> userChoice;
+
+        while (!(cin >> userChoice)) {
+            cout << "\nInvalid input. Please enter a valid number.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Enter your choice: ";
+        }
 
         switch (userChoice) {
         case 1:

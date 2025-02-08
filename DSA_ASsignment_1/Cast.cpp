@@ -169,32 +169,57 @@ void displayCasts() {
 void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
     int actorId, movieId;
     char displayChoice;
+
     cout << "\nEnter 0 to exit at any point" << endl;
 
     // Ask if user wants to display the actor list
-    cout << "Would you like to see the actor list? (Y/N): ";
-    cin >> displayChoice;
-    cin.ignore();  // Clear newline from buffer
+    while (true) {
+        cout << "Would you like to see the actor list? (Y/N): ";
+        cin >> displayChoice;
+        cin.ignore();
 
-    if (displayChoice == 'Y' || displayChoice == 'y') {
-        cout << "\n========= Actor List =========" << endl;
-        displayActors(actorRoot);
+        if (displayChoice == 'Y' || displayChoice == 'y') {
+            cout << "\n========= Actor List =========" << endl;
+            displayActors(actorRoot);
+            break;
+        }
+        else if (displayChoice == 'N' || displayChoice == 'n') {
+            break;
+        }
+        else {
+            cout << "Invalid choice. Please enter 'Y' or 'N'.\n";
+        }
     }
 
     // Ask if user wants to display the movie list
-    cout << "Would you like to see the movie list? (Y/N): ";
-    cin >> displayChoice;
-    cin.ignore();  // Clear newline from buffer
+    while (true) {
+        cout << "Would you like to see the movie list? (Y/N): ";
+        cin >> displayChoice;
+        cin.ignore();
 
-    if (displayChoice == 'Y' || displayChoice == 'y') {
-        cout << "\n========= Movie List =========" << endl;
-        displayMovies(movieRoot);
+        if (displayChoice == 'Y' || displayChoice == 'y') {
+            cout << "\n========= Movie List =========" << endl;
+            displayMovies(movieRoot);
+            break;
+        }
+        else if (displayChoice == 'N' || displayChoice == 'n') {
+            break;
+        }
+        else {
+            cout << "Invalid choice. Please enter 'Y' or 'N'.\n";
+        }
     }
 
     // Actor ID input
     while (true) {
         cout << "Enter actor ID: ";
-        cin >> actorId;
+        if (!(cin >> actorId)) {
+            cout << "Error: Invalid input. Please enter a numeric ID.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
+
         if (actorId == 0) {
             cout << "Exiting add actor to movie process..." << endl;
             return;
@@ -211,7 +236,13 @@ void addActorToMovieWrapper(Movie* movieRoot, Actor* actorRoot) {
     // Movie ID input
     while (true) {
         cout << "Enter movie ID: ";
-        cin >> movieId;
+        if (!(cin >> movieId)) {
+            cout << "Error: Invalid input. Please enter a numeric ID.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
+
         if (movieId == 0) {
             cout << "Exiting add actor to movie process..." << endl;
             return;
@@ -255,33 +286,46 @@ void displayMoviesByActor(Cast* castHead, Movie* movieRoot, Actor* actorRoot) {
     int actorId;
     char displayChoice;
 
-    // Ask if user wants to display actors who actually acted in movies
     cout << "Enter 0 at any point to exit" << endl;
-    cout << "Would you like to see actors who have acted in movies? (Y/N): ";
-    cin >> displayChoice;
-    cin.ignore();
 
-    if (displayChoice == 'Y' || displayChoice == 'y') {
-        cout << "\n========= Actors Who Have Acted in Movies =========" << endl;
+    while (true) {
+        cout << "Would you like to see actors who have acted in movies? (Y/N): ";
+        cin >> displayChoice;
+        cin.ignore();
 
-        Cast* castTemp = castHead;
-        int lastActorId = -1;
+        if (displayChoice == 'Y' || displayChoice == 'y') {
+            cout << "\n========= Actors Who Have Acted in Movies =========" << endl;
+            Cast* castTemp = castHead;
+            int lastActorId = -1;
 
-        while (castTemp != nullptr) {
-            if (castTemp->person_id != lastActorId) { // Prevent duplicate display
-                Actor* actor = searchActorByID(actorRoot, castTemp->person_id);
-                if (actor) {
-                    cout << "Actor ID: " << actor->id << ", Name: " << actor->name << endl;
-                    lastActorId = castTemp->person_id;
+            while (castTemp != nullptr) {
+                if (castTemp->person_id != lastActorId) {
+                    Actor* actor = searchActorByID(actorRoot, castTemp->person_id);
+                    if (actor) {
+                        cout << "Actor ID: " << actor->id << ", Name: " << actor->name << endl;
+                        lastActorId = castTemp->person_id;
+                    }
                 }
+                castTemp = castTemp->next;
             }
-            castTemp = castTemp->next;
+            break;
+        }
+        else if (displayChoice == 'N' || displayChoice == 'n') {
+            break;
+        }
+        else {
+            cout << "Invalid choice. Please enter 'Y' or 'N'.\n";
         }
     }
 
     while (true) {
         cout << "Enter Actor ID: ";
-        cin >> actorId;
+        if (!(cin >> actorId)) {
+            cout << "Error: Invalid input. Please enter a numeric ID.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
 
         if (actorId == 0) {
             cout << "Exiting display movies by actor process..." << endl;

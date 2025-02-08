@@ -178,18 +178,24 @@ void clearInputBuffer() {
 }
 
 void addActorWrapper() {
+    string idStr;
     int id;
     string name;
     int yearOfBirth;
 
     while (true) {
         cout << "Enter actor ID: ";
+        cin >> idStr;
 
-        if (!(cin >> id)) {
+        // Validate that input contains only digits
+        if (idStr.find_first_not_of("0123456789") != string::npos) {
             cout << "Error: Invalid input. Please enter a numeric ID.\n";
-            clearInputBuffer();  
+            cin.clear();
+            cin.ignore(1000, '\n');
             continue;
         }
+
+        id = stoi(idStr); // Convert to integer safely
 
         if (id == 0) {
             cout << "Exiting add actor process..." << endl;
@@ -243,6 +249,8 @@ void addActorWrapper() {
         cout << "Error: Please enter a valid year of birth (between 1900 and 2025).\n";
     }
 
+
+    // insert into AVL tree
     actorRoot = addActor(actorRoot, id, name, yearOfBirth);
 
 
