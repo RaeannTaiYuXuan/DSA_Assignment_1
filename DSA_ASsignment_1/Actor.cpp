@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "Levenshtein.h" // Include the header only
+
 using namespace std;
 
 Actor* actorRoot = nullptr;
@@ -291,7 +293,7 @@ void displayActors(Actor* root) {
 
 //====================================  Raeann Tai Yu Xuan s10262832 - search for an actor by ID ====================================
 
-/**
+/*
  Searches for an actor in the AVL tree by ID.
  root Pointer to the root of the AVL tree.
  The actor's unique ID to search for.
@@ -310,16 +312,39 @@ Actor* searchActorByID(Actor* root, int id) {
     }
 }
 
+//=====================================================================================================================================================
+
 
 //====================================  Raeann Tai Yu Xuan s10262832 -  function to update the actor details ====================================
 
-/**
+/*
  Updates the details of an existing actor.
  This function prompts the user for a new name and/or year of birth.
- If the user enters a blank name or invalid birth year, the previous values remain unchanged.
+ Before updating, it gives the option to display the full list of actors.
+ If the user enters a blank name or an invalid birth year, the previous values remain unchanged.
+ The function also keeps track of changes for an undo feature.
  */
 
 void updateActorDetails() {
+    char viewList;
+    while (true) {
+        cout << "Do you want to see the full actor list before updating? (Y/N): ";
+        cin >> viewList;
+        viewList = tolower(viewList);
+
+        if (viewList == 'y') {
+            displayActors(actorRoot); // Show the full actor list
+            break;
+        }
+        else if (viewList == 'n') {
+            cout << "Proceeding to actor update...\n";
+            break;
+        }
+        else {
+            cout << "Invalid input. Please enter 'Y' for Yes or 'N' for No.\n";
+        }
+    }
+
     int id;
     cout << "Enter actor ID to update: ";
     cin >> id;
@@ -330,13 +355,10 @@ void updateActorDetails() {
         return;
     }
 
-
-
     // Tam Shi Ying S10257952 - Additional feature (Change history & undo change) ====
     // Store the previous version before updating
     pushChange("Actor", id, actor->name, actor->yearOfBirth);
     // ===============================================================================
-
 
     string newName;
     int newYearOfBirth;
@@ -359,24 +381,42 @@ void updateActorDetails() {
         cout << "Invalid year! Keeping previous value.\n";
     }
 
-
-    //only displays the updated actor instead of the full list.
+    // Only displays the updated actor instead of the full list.
     cout << "\nActor details updated successfully!\n";
     cout << "========= Updated Actor Details =========\n";
     cout << "Actor ID: " << actor->id
         << ", Name: \"" << actor->name
         << "\", Year of Birth: " << actor->yearOfBirth << endl;
+
+    char choice;
+    while (true) {
+        cout << "\nDo you want to see the full actor list? (Y/N): ";
+        cin >> choice;
+        choice = tolower(choice);  // Convert input to lowercase for consistency
+
+        if (choice == 'y') {
+            displayActors(actorRoot); // Display all actors in the database
+            break;
+        }
+        else if (choice == 'n') {
+            cout << "Returning to main menu...\n";
+            break;
+        }
+        else {
+            cout << "Invalid input. Please enter 'Y' for Yes or 'N' for No.\n";
+        }
+    }
 }
 
-//====================================  Raeann Tai Yu Xuan s10262832 -  Function to Display Actors by Age Range ====================================
+//===================================================================================================================================================================================
+
+
+//====================================  Raeann Tai Yu Xuan s10262832 -  Function to Displays actors within a specified age range in ascending order. ====================================
 
 /*
-Displays actors within a specified age range in ascending order.
-Performs an in-order traversal of the AVL tree to display actors
-whose ages fall between x and y (inclusive).
-Pointer to the root of the AVL tree.
-minAge Minimum age (x).
-maxAge Maximum age (y).
+Displays actors whose ages fall within a specified range.
+Performs an in-order traversal of the AVL tree to print actors
+in ascending order of age within the given range.
  */
 
 void displayActorsByAgeRange(Actor* root, int minAge, int maxAge) {
@@ -398,9 +438,11 @@ void displayActorsByAgeRange(Actor* root, int minAge, int maxAge) {
     displayActorsByAgeRange(root->right, minAge, maxAge);
 }
 
-//====================================  Raeann Tai Yu Xuan s10262832 -  Wrapper Function to Get User Input ====================================
-
-
+/*
+Counts the number of actors within a specified age range.
+Performs an in - order traversal of the AVL tree to count actors
+whose ages fall between the given minimum and maximum age(inclusive)
+*/
 
 void countActorsByAgeRange(Actor* root, int minAge, int maxAge, int& count) {
     if (root == nullptr) return;
@@ -420,105 +462,203 @@ void countActorsByAgeRange(Actor* root, int minAge, int maxAge, int& count) {
     countActorsByAgeRange(root->right, minAge, maxAge, count);
 }
 
+
+/*
+Displays actors within a specified age range in ascending order.
+Uses in-order traversal of the AVL tree to display actors whose ages fall between x and y (inclusive).
+Before displaying, it provides a count of the actors within the range and asks the user if they want to see details.
+ */
 void displayActorsByAgeRangeWrapper() {
     int minAge, maxAge;
 
-    // Prompt user for age range
-    cout << "Enter minimum age (x): ";
-    cin >> minAge;
+    // Prompt user for age range input with validation
+    while (true) {
+        cout << "Enter minimum age (x): ";
+        if (!(cin >> minAge)) {
+            cout << "Invalid input. Please enter a valid number.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
 
-    cout << "Enter maximum age (y): ";
-    cin >> maxAge;
+        cout << "Enter maximum age (y): ";
+        if (!(cin >> maxAge)) {
+            cout << "Invalid input. Please enter a valid number.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
 
-    if (minAge > maxAge) {
-        cout << "Error: Minimum age cannot be greater than maximum age. Try again.\n";
-        return;
+        if (minAge > maxAge) {
+            cout << "Error: Minimum age cannot be greater than maximum age. Try again.\n";
+        }
+        else {
+            break;
+        }
     }
 
     int count = 0;
 
-    // Count the number of actors within the age range
+    // Count the number of actors within the given age range
     countActorsByAgeRange(actorRoot, minAge, maxAge, count);
 
     cout << "\nTotal number of actors aged between " << minAge << " and " << maxAge << ": " << count << endl;
 
-    // Prompt user if they want to see the details
+    // Prompt user to decide whether to display detailed actor information
     char choice;
-    cout << "Would you like to see the details? (Y/N): ";
-    cin >> choice;
+    while (true) {
+        cout << "Would you like to see the details? (Y/N): ";
+        cin >> choice;
+        choice = tolower(choice);  // Convert input to lowercase for consistency
 
-    if (choice == 'Y' || choice == 'y') {
-        cout << "\n===== Actors Aged Between " << minAge << " and " << maxAge << " =====\n";
-        displayActorsByAgeRange(actorRoot, minAge, maxAge);
-    }
-    else {
-        cout << "Returning to menu...\n";
+        if (choice == 'y') {
+            cout << "\n===== Actors Aged Between " << minAge << " and " << maxAge << " =====\n";
+            displayActorsByAgeRange(actorRoot, minAge, maxAge);
+            break;
+        }
+        else if (choice == 'n') {
+            cout << "Returning to menu...\n";
+            break;
+        }
+        else {
+            cout << "Invalid input. Please enter 'Y' for Yes or 'N' for No.\n";
+        }
     }
 }
+//===================================================================================================================
 
 
-
-//========== Raeann Tai Yu Xuan S10262832J - advance (ratings) ============
-
+//========================== Raeann Tai Yu Xuan S10262832J - advance (ratings & recommendation) ============================
 
 /*
 Allows a user to rate an actor.
-Prompts for actor ID and rating, then updates the average rating.
+Prompts for actor ID and rating, then updates the average rating and also giving recommendation for actors 
+with similar names.
+
+Finds the top 3 most similar actors to a given target actor based on name similarity.
+Uses the Levenshtein distance algorithm to compare actor names and identifies
+the closest matches.
  */
+
+void findSimilarActors(Actor* root, const Actor* targetActor, Actor* recommendations[3], int distances[3]) {
+    if (root == nullptr) return;
+
+    // Ignore the target actor itself
+    if (root->id != targetActor->id) {
+        int distance = levenshteinDistance(targetActor->name, root->name);
+
+        // Insert into the top 3 recommendations if it's a better match
+        for (int i = 0; i < 3; i++) {
+            if (distance < distances[i]) {
+                // Shift lower-ranked actors down
+                for (int j = 2; j > i; j--) {
+                    distances[j] = distances[j - 1];
+                    recommendations[j] = recommendations[j - 1];
+                }
+                // Insert new recommendation
+                distances[i] = distance;
+                recommendations[i] = root;
+                break;
+            }
+        }
+    }
+
+    // Recursive traversal (in-order to ensure sorted traversal)
+    findSimilarActors(root->left, targetActor, recommendations, distances);
+    findSimilarActors(root->right, targetActor, recommendations, distances);
+}
+
+
+// Rate an actor and show recommendations based on name similarity
 void rateActor(Actor* root) {
-    if (root == nullptr) {  // Check if the tree is empty
+    if (root == nullptr) {
         cout << "Error: No actors available to rate.\n";
         return;
     }
 
+    char showList;
+    cout << "Would you like to see the full list of actors before rating? (Y/N): ";
+    cin >> showList;
+
+    if (showList == 'Y' || showList == 'y') {
+        cout << "\n========= List of Actors =========\n";
+        displayActors(root);
+        cout << "==================================\n";
+    }
+
     int actorID;
     cout << "Enter Actor ID to rate: ";
-    cin >> actorID;
+    if (!(cin >> actorID)) {
+        cout << "Invalid input. Please enter a numeric Actor ID.\n";
+        cin.clear();
+        cin.ignore(1000, '\n');
+        return;
+    }
 
-    // Search for the actor by ID safely
     Actor* actor = searchActorByID(root, actorID);
     if (actor == nullptr) {
         cout << "Error: Actor with ID " << actorID << " not found.\n";
         return;
     }
 
-    // Get rating input
     float rating;
-    cout << "Enter your rating for " << actor->name << " (0 - 5): ";
-    cin >> rating;
+    while (true) {
+        cout << "Enter your rating for \"" << actor->name << "\" (0 - 5): ";
+        if (!(cin >> rating)) {
+            cout << "Invalid input. Please enter a number between 0 and 5.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
 
-    // Validate rating
-    if (rating < 0.0 || rating > 5.0) {
-        cout << "Invalid rating! Please enter a value between 0 and 5.\n";
-        return;
+        if (rating < 0.0 || rating > 5.0) {
+            cout << "Invalid rating! Please enter a value between 0 and 5.\n";
+        }
+        else {
+            break;
+        }
     }
 
     // Update average rating
     actor->rating = ((actor->rating * actor->ratingCount) + rating) / (actor->ratingCount + 1);
     actor->ratingCount++;
 
-    // Confirm rating submission
-    cout << "Rating submitted successfully for " << actor->name << "!\n";
+    cout << "Rating submitted successfully for \"" << actor->name << "\"!\n";
 
-    // Display the rated actor's updated information
+    // Display updated actor details
     cout << "\n========= Rated Actor Details =========" << endl;
-    cout << "ID:" << actor->id
+    cout << "ID: " << actor->id
         << "\nName: " << actor->name
         << "\nYear of Birth: " << actor->yearOfBirth
         << "\nRating: ";
 
-    // Display stars based on average rating
     int fullStars = static_cast<int>(actor->rating);
-    for (int i = 0; i < fullStars; ++i) {
-        cout << "*";
-    }
-    for (int i = fullStars; i < 5; ++i) {
-        cout << ".";
-    }
+    fullStars = std::min(fullStars, 5);
 
+    for (int i = 0; i < fullStars; ++i) cout << "*";
+    for (int i = fullStars; i < 5; ++i) cout << ".";
 
     cout << " (" << actor->rating << "/5 from " << actor->ratingCount << " ratings)" << endl;
+
+    // Find top 3 similar actors based on name similarity
+    Actor* recommendations[3] = { nullptr, nullptr, nullptr };
+    int distances[3] = { numeric_limits<int>::max(), numeric_limits<int>::max(), numeric_limits<int>::max() };
+
+    findSimilarActors(root, actor, recommendations, distances);
+
+    // Display recommendations
+    cout << "\n========= Recommended Actors Based on Similar Names =========\n";
+    for (int i = 0; i < 3; i++) {
+        if (recommendations[i] != nullptr) {
+            cout << i + 1 << ". " << recommendations[i]->name
+                << " (Year of Birth: " << recommendations[i]->yearOfBirth
+                << ", Similarity Score: " << distances[i] << ")\n";
+        }
+    }
+    cout << "========================================================\n";
 }
+
+//===================================================================================================================
 
 
 
